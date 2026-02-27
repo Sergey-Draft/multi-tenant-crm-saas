@@ -1,0 +1,66 @@
+networks:
+  crm_net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: crm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: crm
+      POSTGRES_PASSWORD: crm
+      POSTGRES_DB: crm
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - crm_net
+
+  redis:
+    image: redis:7
+    container_name: crm_redis
+    restart: always
+    volumes:
+      - redisdata:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - crm_net
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: crm_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - crm_net
+
+
+  backend:
+    build:
+      context: ../backend
+    container_name: crm_backend
+    restart: always
+    command: yarn start:dev
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - crm_net
