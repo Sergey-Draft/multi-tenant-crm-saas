@@ -5,8 +5,9 @@ on:
     paths:
       - "backend/**"
   push:
-    paths:
-      - "backend/**"
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
