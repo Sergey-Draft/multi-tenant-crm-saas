@@ -1,0 +1,57 @@
+name: Backend CI
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+  push:
+    paths:
+      - "backend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: crm
+          POSTGRES_PASSWORD: crm
+          POSTGRES_DB: crm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U crm"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Prisma generate
+        run: |
+          cd backend
+          npx prisma generate
+
+      - name: Build project
+        run: |
+          cd backend
+          npm run build
