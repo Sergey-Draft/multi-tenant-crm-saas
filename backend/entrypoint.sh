@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
-# При монтировании тома node_modules может быть пустым — ставим зависимости при первом запуске
-if [ ! -f node_modules/.bin/nest ]; then
+# При монтировании тома node_modules может быть пустым или устаревшим — ставим зависимости при необходимости
+if [ ! -f node_modules/.bin/nest ] || [ ! -d node_modules/class-validator ] || [ ! -d node_modules/@prisma/adapter-pg ]; then
   echo "Installing dependencies..."
   yarn install
 fi
