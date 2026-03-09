@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +34,7 @@ export class AuthService {
       data: {
         email: dto.email,
         password: hash,
+        role: UserRole.OWNER,
         companyId: company.id,
       },
     });
@@ -41,6 +43,7 @@ export class AuthService {
       company: {
         id: company.id,
         name: company.name,
+        role: user.role,
       },
       user: {
         id: user.id,

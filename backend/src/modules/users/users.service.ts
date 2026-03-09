@@ -2,11 +2,14 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserRole } from '@prisma/client';
 import { ChangeRoleDto } from './dto/change-role.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from './dto/create-user.dto';
 
 const roleHierarchy = {
   SUPER_ADMIN: 5,
@@ -19,6 +22,55 @@ const roleHierarchy = {
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
+
+
+  async create(dto: CreateUserDto, currentUser: any) {
+
+    // Только ADMIN / OWNER / SUPER_ADMIN
+    if (
+      currentUser.role !== UserRole.ADMIN &&
+      currentUser.role !== UserRole.OWNER &&
+      currentUser.role !== UserRole.SUPER_ADMIN
+    ) {
+      throw new ForbiddenException('You cannot create users');
+    }
+  
+    const existing = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+  
+    if (existing) {
+      throw new ConflictException('User already exists');
+    }
+  
+    const hash = await bcrypt.hash(dto.password, 10);
+  
+    const role = dto.role ?? UserRole.EMPLOYEE;
+  
+    // ADMIN не может создавать OWNER
+    if (
+      currentUser.role === UserRole.ADMIN &&
+      role === UserRole.OWNER
+    ) {
+      throw new ForbiddenException('Admin cannot create OWNER');
+    }
+  
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email,
+        password: hash,
+        role,
+        companyId: currentUser.companyId,
+      },
+    });
+  
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+  }
+
 
   /* =============================
      GET ALL USERS
