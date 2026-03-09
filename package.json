@@ -1,0 +1,12 @@
+{
+  "name": "crm-platform",
+  "scripts": {
+    "frontend": "cd frontend && next dev",
+    "backend": "cd backend && npx nest start --watch",
+    "dev-front": "yarn frontend",
+    "dev-back": "yarn backend",
+    "git:front": "git add frontend/ && git commit -m",
+    "git:back": "git add backend/ && git commit -m",
+    "git:all": "git add . && git commit -m"
+  }
+}
