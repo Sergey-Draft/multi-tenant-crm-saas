@@ -5,17 +5,28 @@ import {
   Param,
   Body,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ChangeRoleDto } from './dto/change-role.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+
+  @Post()
+  create(
+    @Body() dto: CreateUserDto,
+    @CurrentUser() user,
+  ) {
+    return this.usersService.create(dto, user);
+  }
 
   @Get()
   findAll(@CurrentUser() user) {
