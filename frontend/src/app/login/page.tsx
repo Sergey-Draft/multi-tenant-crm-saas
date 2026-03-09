@@ -3,12 +3,18 @@
 import { useState } from "react"
 import { login } from "@/features/auth/api/login"
 import { useAuthStore } from "@/features/auth/store/auth.store"
+import { redirect } from "next/navigation"
 
 export default function LoginPage() {
-  const setToken = useAuthStore((s) => s.setToken)
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+
+
+
+  const setToken = useAuthStore((s) => s.setToken)
+  const setUser = useAuthStore((state) => state.setUser)
+
+  const [email, setEmail] = useState("draft@krot.com")
+  const [password, setPassword] = useState("123456")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -16,7 +22,11 @@ export default function LoginPage() {
     const data = await login({ email, password })
 
     setToken(data.accessToken)
+    setUser(data.user)
     localStorage.setItem("accessToken", data.accessToken)
+    document.cookie = `accessToken=${data.accessToken}`
+
+    redirect('/dashboard')
   }
 
   return (
