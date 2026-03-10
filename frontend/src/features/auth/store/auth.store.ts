@@ -2,23 +2,38 @@ import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 
 interface AuthState {
+  user: any | null
   accessToken: string | null
-  users: unknown[] 
-  user: unknown[] 
-  isLoading: boolean
-  setToken: (token: string | null) => void
-  setUser: (user: string[] | []  ) => void
-  setUsers: (users: object[] | []  ) => void
+  refreshToken: string | null
+
+  setUser: (user: any) => void
+
+  setAuth: (data: {
+    user: any
+    accessToken: string
+    refreshToken: string
+  }) => void
+
+  logout: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
   devtools((set) => ({
-    users: [],
-    user: [],
-    isLoading: false,
+    user: null,
     accessToken: null,
-    setToken: (token) => set({ accessToken: token }),
-    setUser: (user) => set({user: user}),
-    setUsers: (users) => set({users: users}),
+    refreshToken: null,
+
+    setUser: (user) =>
+      set({ user }),
+  
+    setAuth: ({ user, accessToken, refreshToken }) =>
+      set({ user, accessToken, refreshToken }),
+  
+    logout: () =>
+      set({
+        user: null,
+        accessToken: null,
+        refreshToken: null,
+      }),
   }))
 )
