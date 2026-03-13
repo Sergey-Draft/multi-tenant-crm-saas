@@ -1,0 +1,210 @@
+// "use client";
+
+// import Link from "next/link";
+// import { usePathname } from "next/navigation";
+// import { menu } from "./sidebar-menu";
+// import { useUIStore } from "@/store/ui.store";
+
+// export function Sidebar() {
+//   const pathname = usePathname();
+//   const collapsed = useUIStore((s) => s.sidebarCollapsed);
+
+//   return (
+//     <div
+//       className={`${
+//         collapsed ? "w-16" : "w-64"
+//       } transition-all border-r bg-background flex flex-col `}
+//     >
+//       <div className="h-14 flex items-center px-4 border-b">
+//         {!collapsed && <span className="font-semibold text-lg">CRM</span>}
+//       </div>
+
+//       <nav className="flex flex-col p-2 gap-1">
+//         {menu.map((item) => {
+//           const Icon = item.icon;
+
+//           const active = pathname === item.href;
+
+//           return (
+//             <Link
+//               key={item.href}
+//               href={item.href}
+//               className={`flex items-center ${
+//                 collapsed ? "justify-center" : "gap-3"
+//               } px-3 py-2 rounded-md text-sm transition
+//               ${active ? "bg-muted font-medium" : "hover:bg-muted/50"}
+//               `}
+//             >
+//               <Icon className="h-4 w-4" />
+
+//               {!collapsed && item.title}
+//             </Link>
+//           );
+//         })}
+//       </nav>
+//     </div>
+//   );
+// }
+
+
+
+"use client"
+
+import {
+  BarChart3, BookOpen, CalendarDays, ClipboardList, Contact2,
+  CreditCard, FileText, GraduationCap, LayoutDashboard, ListChecks,
+  Settings, Shield, UserPlus, Users, Wallet, BookMarked, RefreshCw, UserCheck
+} from "lucide-react";
+import Link from "next/link";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { useAuthStore } from "@/features/auth/store/auth.store";
+import { usePathname } from "next/navigation";
+import { useUIStore } from "@/store/ui.store";
+
+interface NavItem {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    label: "Sales",
+    items: [
+      { title: "CRM Дашборд", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Клиенты", url: "/dashboard/clients", icon: ListChecks },
+      { title: "Пользователи", url: "/dashboard/users", icon: FileText },
+      { title: "Лиды", url: "/dashboard/leads", icon: FileText },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { title: "Payments", url: "/payments", icon: CreditCard },
+      { title: "Schedule", url: "/payments-schedule", icon: CalendarDays },
+      { title: "Debt", url: "/debt", icon: Wallet },
+    ],
+  },
+  {
+    label: "Education",
+    items: [
+      { title: "Groups", url: "/groups", icon: Users,  },
+      { title: "Lessons", url: "/lessons", icon: BookOpen,  },
+      { title: "Class Schedule", url: "/class-schedule", icon: CalendarDays,  },
+      { title: "Students", url: "/edit-groups", icon: GraduationCap,  },
+      { title: "Topics", url: "/schedule-view", icon: BookMarked,  },
+      { title: "Compensations", url: "/working-out", icon: RefreshCw, },
+      { title: "Assignments", url: "/appointments", icon: UserCheck,  },
+      { title: "Attendance", url: "/attendance-reports", icon: ClipboardList,  },
+    ],
+  },
+  {
+    label: "Users",
+    items: [
+      { title: "Access", url: "/access", icon: Shield,},
+      { title: "New Customer", url: "/parents-create", icon: UserPlus },
+      { title: "Journal", url: "/journal", icon: Contact2 },
+    ],
+  },
+  {
+    label: "Reports",
+    items: [
+      { title: "Reports", url: "/reports", icon: BarChart3 },
+      { title: "Settings", url: "/settings", icon: Settings, },
+    ],
+  },
+];
+
+export default function AppSidebar() {
+  const { state } = useSidebar();
+  const collapsed = useUIStore((s) => s.sidebarCollapsed);
+  const pathname = usePathname();
+  const user = useAuthStore((s) => s.user);
+
+  return (
+    <Sidebar collapsible="icon" className="border-r-0">
+      <SidebarHeader className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center font-bold text-sidebar-primary-foreground text-sm shrink-0">
+            S
+          </div>
+          {collapsed && (
+            <span className="font-semibold text-sidebar-primary-foreground text-lg tracking-tight">
+              Stemlab
+            </span>
+          )}
+        </div>
+      </SidebarHeader>
+
+      <SidebarContent className="scrollbar-thin">
+        {NAV_SECTIONS.map((section) => {
+
+          return (
+            <SidebarGroup key={section.label}>
+              {!collapsed && (
+                <SidebarGroupLabel className="text-sidebar-muted text-[11px] uppercase tracking-wider font-medium px-3">
+                  {section.label}
+                </SidebarGroupLabel>
+              )}
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {section.items.map((item) => (
+                    <SidebarMenuItem key={item.url}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.url || pathname.startsWith(item.url + "/")}
+                      >
+                        <Link
+                          href={item.url}
+                          // end={item.url === "/crm"}
+                          className="gap-3 rounded-md px-3 py-2 text-sm transition-colors text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                          // active="bg-sidebar-accent text-sidebar-primary font-medium"
+                        >
+                          <item.icon className="h-4 w-4 shrink-0" />
+                          {!collapsed && <span>{item.title}</span>}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
+      </SidebarContent>
+
+      {!collapsed && user && (
+        <SidebarFooter className="p-4 border-t border-sidebar-border">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-sidebar-primary/20 flex items-center justify-center text-sidebar-primary text-xs font-semibold shrink-0">
+              {user.email[0]}{user.email[0]}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-sidebar-accent-foreground truncate">
+                {user.email} {user.email}
+              </p>
+              <p className="text-xs text-sidebar-muted truncate">{user.role}</p>
+            </div>
+          </div>
+        </SidebarFooter>
+      )}
+    </Sidebar>
+  );
+}

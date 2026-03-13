@@ -1,20 +1,21 @@
-import { create } from "zustand"
-import { devtools } from "zustand/middleware"
+import { redirect } from "next/navigation";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 interface AuthState {
-  user: any | null
-  accessToken: string | null
-  refreshToken: string | null
+  user: any | null;
+  accessToken: string | null;
+  refreshToken: string | null;
 
-  setUser: (user: any) => void
+  setUser: (user: any) => void;
 
   setAuth: (data: {
-    user: any
-    accessToken: string
-    refreshToken: string
-  }) => void
+    user: any;
+    accessToken: string;
+    refreshToken: string;
+  }) => void;
 
-  logout: () => void
+  logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -23,17 +24,20 @@ export const useAuthStore = create<AuthState>()(
     accessToken: null,
     refreshToken: null,
 
-    setUser: (user) =>
-      set({ user }),
-  
+    setUser: (user) => set({ user }),
+
     setAuth: ({ user, accessToken, refreshToken }) =>
       set({ user, accessToken, refreshToken }),
-  
-    logout: () =>
+
+    logout: () => {
       set({
         user: null,
         accessToken: null,
         refreshToken: null,
-      }),
+      });
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      redirect("/login");
+    },
   }))
-)
+);
