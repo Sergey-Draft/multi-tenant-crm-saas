@@ -8,5 +8,8 @@
     "git:front": "git add frontend/ && git commit -m",
     "git:back": "git add backend/ && git commit -m",
     "git:all": "git add . && git commit -m"
+  },
+  "dependencies": {
+    "lucide-react": "^0.577.0"
   }
 }
