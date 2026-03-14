@@ -17,22 +17,13 @@ const LEAD_STATUS_LABEL: Record<string, string> = {
   REJECTED: "Отклонён",
 };
 
-const LEAD_STATUS_VARIANT: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  NEW: "secondary",
-  IN_PROGRESS: "default",
-  DONE: "outline",
-  REJECTED: "destructive",
-};
 
 const LEAD_STATUS_COLORS: Record<
 string,string> = {
-  NEW: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
-  IN_PROGRESS: "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300",
-  DONE: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
-  REJECTED: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300", 
+  NEW: "bg-blue-50 text-blue-700  dark:bg-blue-950 dark:text-blue-300",
+  IN_PROGRESS: "bg-red-50 text-red-700 dark:bg-sky-950 dark:text-sky-300",
+  DONE: "bg-green-100 text-kanban-won dark:bg-green-950 dark:text-green-300",
+  REJECTED: "bg-gray-200 text-kanban-lost dark:bg-red-950 dark:text-red-300", 
 };
 
 interface ClientDetailModalProps {
@@ -48,7 +39,7 @@ export function ClientDetailModal({
 
   return (
     <Dialog open={!!clientId} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg bg-white">
         <DialogHeader>
           <DialogTitle>
             {isLoading ? (

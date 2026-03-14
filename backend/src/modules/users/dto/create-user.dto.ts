@@ -8,6 +8,10 @@ import {
 import { UserRole } from '@prisma/client';
 
 export class CreateUserDto {
+  @IsString()
+  @MinLength(2)
+  name!: string;
+
   @IsEmail()
   email!: string;
 

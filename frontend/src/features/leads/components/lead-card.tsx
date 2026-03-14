@@ -3,10 +3,10 @@
 
 
 const statusBorderColors = {
-    NEW: 'border-l-[#f44336]',
-    IN_PROGRESS: 'border-l-[#2196f3]',
-    DONE: 'border-l-[#3ca712]',
-    REJECTED: 'border-l-[#999999]'
+    NEW: 'border-l-[hsl(var(--kanban-new))]',
+    IN_PROGRESS: 'border-l-[hsl(var(--kanban-progress))]',
+    DONE: 'border-l-[hsl(var(--kanban-won))]',
+    REJECTED: 'border-l-[hsl(var(--kanban-lost))]'
   }
 
 
@@ -15,6 +15,7 @@ const LeadCard = ({ lead }:any) => {
     console.log('LEAD', lead)
     return (
       <div   className={`
+        h-[220px]
         bg-white 
         rounded-lg 
         shadow-md 

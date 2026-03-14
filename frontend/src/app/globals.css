@@ -46,6 +46,12 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --color-kanban-new: hsl(var(--kanban-new));
+  --color-kanban-progress: hsl(var(--kanban-progress));
+  --color-kanban-negotiation: hsl(var(--kanban-negotiation));
+  --color-kanban-won: hsl(var(--kanban-won));
+  --color-kanban-lost: hsl(var(--kanban-lost));
 }
 
 @layer base {
@@ -71,7 +77,7 @@
     --muted: 220 14% 94%;
     --muted-foreground: 220 10% 46%;
 
-    --accent: 174 62% 38%;
+    --accent: 210 90% 35%; 
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -102,10 +108,10 @@
 
     /* Kanban цвета */
     --kanban-new: 210 90% 35%;
-    --kanban-progress: 38 92% 50%;
+    --kanban-progress: 4 90% 58%;
     --kanban-negotiation: 270 60% 50%;
     --kanban-won: 142 71% 35%;
-    --kanban-lost: 0 72% 51%;
+    --kanban-lost: 0 0% 60%;
   }
 
   .dark {
