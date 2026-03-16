@@ -1,27 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { CreateUserDto, UserRole } from '@/types/user';
+import { CreateUserDto, UserRole } from "@/types/user";
 import useCreateUser from "../hooks/use-create-user";
+import { USER_ROLE_OPTIONS } from "@/lib/options";
 
 export default function CreateUser() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("EMPLOYEE");
 
-  const mutation = useCreateUser()
+  const mutation = useCreateUser();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const data: CreateUserDto ={
-        email,
-        password,
-        role
-    }
+    const data: CreateUserDto = {
+      email,
+      password,
+      role,
+    };
 
-    mutation.mutate(data)
-
+    mutation.mutate(data);
   };
 
   return (
@@ -44,11 +44,11 @@ export default function CreateUser() {
           onChange={(e) => setRole(e.target.value as UserRole)}
           className="border p-2"
         >
-            <option value="SUPER_ADMIN">Супер админ</option>
-            <option value="OWNER">Владелец</option>
-            <option value="EMPLOYEE">Сотрудник</option>
-            <option value="MANAGER">Менеджер</option>
-            <option value="ADMIN">Администратор</option>
+          {USER_ROLE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
 
         <button className="bg-black text-white p-2">Add user</button>

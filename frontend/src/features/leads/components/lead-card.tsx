@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 
 
 
@@ -42,6 +43,12 @@ const LeadCard = ({ lead }:any) => {
           <div className="text-base mb-[6px] text-[#555]">
             {lead?.dateDue}
           </div>
+          {lead?.Task.length > 0 && (
+          <Badge className="bg-blue-100 text-blue-700"  >
+            задачи: {lead?.Task.length }
+          </Badge>
+          )}
+
         </div>
       </div>
     );

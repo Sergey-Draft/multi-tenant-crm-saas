@@ -1,7 +1,22 @@
-export type UserRole = 'SUPER_ADMIN' | 'OWNER' | 'ADMIN' | 'MANAGER' | 'EMPLOYEE'
+export type UserRole =
+  | "SUPER_ADMIN"
+  | "OWNER"
+  | "ADMIN"
+  | "MANAGER"
+  | "EMPLOYEE";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  companyId: string;
+  createdAt: string;
+}
 
 export interface CreateUserDto {
-  email: string
-  password: string
-  role: UserRole
+  name: string;
+  email: string;
+  password: string;
+  role?: UserRole;
 }

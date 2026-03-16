@@ -39,7 +39,7 @@ export class AuthService {
         name: dto.name,
         email: dto.email,
         password: hash,
-        role: UserRole.OWNER,
+        role: dto.role,
         companyId: company.id,
       },
     });
@@ -54,6 +54,7 @@ export class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     };
   }

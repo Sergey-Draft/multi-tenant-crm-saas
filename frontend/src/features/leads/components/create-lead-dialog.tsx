@@ -101,7 +101,7 @@ export default function CreateLeadDialog({ onSuccess }: CreateLeadDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       {/* Кнопка-триггер */}
       <DialogTrigger asChild>
-        <Button>Добавить клиента</Button>
+        <Button>Добавить Лид</Button>
       </DialogTrigger>
 
       {/* Сам диалог */}
