@@ -1,26 +1,40 @@
-## Description
-<!-- Кратко опиши, что сделал и зачем -->
-Example:
-Add GitHub Actions workflow for backend CI
+<!--
+  ═══════════════════════════════════════════════════
+  ЗАГОЛОВОК PR (Title) — пишется над этим полем
+  ═══════════════════════════════════════════════════
+  Формат: <тип>(<область>): <что сделано>
 
-## Type of change
-<!-- Укажи тип изменения -->
-- [ ] feat: новая функциональность
-- [ ] fix: исправление багов
-- [ ] refactor: рефакторинг кода
-- [ ] chore: вспомогательные задачи (CI, env, deps)
-- [ ] docs: документация
+  Типы:
+    feat     — новая функциональность
+    fix      — исправление бага
+    refactor — рефакторинг без новых фич и фиксов
+    chore    — вспомогательное (CI, зависимости, конфиги)
+    docs     — документация
+
+  Примеры заголовков:
+    feat(auth): add refresh token endpoint
+    fix(leads): fix status not saving on update
+    refactor(users): extract user mapper to separate file
+    chore(ci): add frontend GitHub Actions workflow
+    docs(readme): add deployment instructions
+
+  ═══════════════════════════════════════════════════
+  ОПИСАНИЕ PR (Description) — заполняй ниже
+  ═══════════════════════════════════════════════════
+-->
+
+## Description
+<!-- Кратко: что сделал и зачем. 1-3 предложения -->
+
 
 ## Changes made
-<!-- Список ключевых изменений -->
-- 
+<!-- Конкретный список изменений. Что добавил / изменил / удалил -->
+-
 
 ## Checklist
-- [ ] Code builds successfully
-- [ ] Lint passed
-- [ ] Tests (unit/integration) passed
-- [ ] CI workflow ran successfully
-- [ ] PR targets correct branch (`develop` или `main`)
+- [ ] Код собирается без ошибок
+- [ ] PR направлен в правильную ветку (`develop` или `main`)
+- [ ] CI workflow прошёл успешно
 
 ## Notes
-<!-- Опционально: важные комментарии, инструкции, что проверить, известные баги -->
+<!-- Опционально: что важно проверить, известные ограничения, ссылки на задачи -->
