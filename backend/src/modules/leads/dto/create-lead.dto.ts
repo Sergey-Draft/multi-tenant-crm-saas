@@ -24,6 +24,7 @@ export class CreateLeadDto {
   @IsString()
   dateDue!: string;
 
+  @IsOptional()
   @IsString()
-  assignedToId: string | undefined;
+  assignedToId?: string;
 }

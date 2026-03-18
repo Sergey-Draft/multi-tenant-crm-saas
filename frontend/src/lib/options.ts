@@ -3,9 +3,17 @@ import { Option } from "@/types/option";
 export const LEAD_STATUS_OPTIONS: Option[] = [
   { value: "NEW",         label: "Новый" },
   { value: "IN_PROGRESS", label: "В работе" },
-  { value: "DONE",        label: "Готово" },
+  { value: "DONE",        label: "Обработан" },
   { value: "REJECTED",    label: "Отклонён" },
 ];
+
+
+export const LEAD_STATUS_VALUES = {
+  NEW: "Новый",
+  IN_PROGRESS: "В работе",
+  DONE: "Обработан",
+  REJECTED: "Отклонен"
+} as const
 
 export const TASK_STATUS_OPTIONS: Option[] = [
   { value: "TODO",        label: "К выполнению" },
