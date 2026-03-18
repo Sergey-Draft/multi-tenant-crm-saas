@@ -1,58 +1,171 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
-
-
-
+import { Button } from "@/components/ui/button";
+import {
+  Calendar,
+  Phone,
+  ClipboardList,
+  ExternalLink,
+  AlertCircle,
+} from "lucide-react";
 
 const statusBorderColors = {
-    NEW: 'border-l-[hsl(var(--kanban-new))]',
-    IN_PROGRESS: 'border-l-[hsl(var(--kanban-progress))]',
-    DONE: 'border-l-[hsl(var(--kanban-won))]',
-    REJECTED: 'border-l-[hsl(var(--kanban-lost))]'
-  }
+  NEW: "border-l-[hsl(var(--kanban-new))]",
+  IN_PROGRESS: "border-l-[hsl(var(--kanban-progress))]",
+  DONE: "border-l-[hsl(var(--kanban-won))]",
+  REJECTED: "border-l-[hsl(var(--kanban-lost))]",
+};
 
+function formatDate(dateStr: string) {
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(dateStr));
+}
 
-const LeadCard = ({ lead }:any) => {
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
 
-    console.log('LEAD', lead)
-    return (
-      <div   className={`
-        h-[220px]
-        bg-white 
-        rounded-lg 
-        shadow-md 
-        p-[14px] 
-        mb-4 
-        transition-transform 
-        duration-300 
-        ease-in-out 
-        cursor-pointer
-        border-l-4
-         ${statusBorderColors[lead?.status as keyof typeof statusBorderColors] || ''}
-        hover:-translate-y-1
-        hover:shadow-lg
-      `}>
-        <div className="flex-col">
-          <div className="text-base font-bold mb-2 capitalize">{lead?.title}</div>
-          <div className="text-base mb-[6px] text-[#555]">Description: {lead?.description}</div>
-          <div className="text-base mb-[6px] text-[#555]">
-            STATUS: {lead?.status}
-          </div>
-          <div className="text-base mb-[6px] text-[#555]">
-            {lead?.dateDue}
-          </div>
-          <div className="text-base mb-[6px] text-[#555]">
-            {lead?.dateDue}
-          </div>
-          {lead?.Task.length > 0 && (
-          <Badge className="bg-blue-100 text-blue-700"  >
-            задачи: {lead?.Task.length }
-          </Badge>
+function isOverdue(dateStr: string) {
+  return new Date(dateStr) < new Date();
+}
+
+interface LeadCardProps {
+  lead: any;
+  onOpen?: (lead: any) => void;
+}
+
+const LeadCard = ({ lead, onOpen }: LeadCardProps) => {
+  const borderColor =
+    statusBorderColors[lead?.status as keyof typeof statusBorderColors] ?? "";
+
+  const overdue =
+    lead?.dateDue &&
+    lead?.status !== "DONE" &&
+    lead?.status !== "REJECTED" &&
+    isOverdue(lead.dateDue);
+
+  const assignedName =
+    lead?.assignedTo?.name || lead?.assignedTo?.email || null;
+
+  return (
+    <div
+      onDoubleClick={() => onOpen?.(lead)}
+      className={`
+        group bg-white rounded-xl shadow-sm
+        border border-gray-100 border-l-4
+        p-4 mb-3 flex flex-col gap-2
+        h-[240px] overflow-hidden
+        transition-all duration-200
+        cursor-pointer hover:-translate-y-0.5 hover:shadow-md
+        ${borderColor}
+      `}
+    >
+      {/* Заголовок + кнопка открытия */}
+      <div className="flex items-start justify-between gap-2 shrink-0">
+        <p className="font-medium text-[16px] leading-snug">{lead?.title}</p>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen?.(lead);
+          }}
+          title="Открыть лид"
+        >
+          <ExternalLink className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* 1. Клиент + телефон */}
+      {lead?.client && (
+        <div className="flex items-center justify-between shrink-0">
+          <span className="text-[16px] text-blue-400 font-medium">
+            {lead.client.name}
+          </span>
+          {lead.client.phone && (
+            <span className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Phone className="h-3 w-3" />
+              {lead.client.phone}
+            </span>
           )}
+        </div>
+      )}
 
+      {/* 2. Дата создания + срок */}
+      <div className="flex flex-col items-center gap-0.5 text-[14px] text-muted-foreground shrink-0">
+        <div className="flex flex-col items-start">
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
+            Создан: {formatDate(lead?.createdAt)}
+          </span>
+
+          {lead?.dateDue && (
+            <span
+              className={`flex items-center gap-1 ${
+                overdue ? "text-red-500 font-medium" : ""
+              }`}
+            >
+              {overdue && <AlertCircle className="h-3.5 w-3.5 shrink-0" />}
+              {!overdue && <Calendar className="h-3.5 w-3.5 shrink-0" />}
+              Дедлайн: {formatDate(lead.dateDue)}
+            </span>
+          )}
         </div>
       </div>
-    );
 
-}
+      {/* 3. Описание — занимает оставшееся место, обрезка с троеточием */}
+      <div className="flex-1 min-h-0">
+        {lead?.description ? (
+          <p   className="text-[16px] font-medium text-gray-600 leading-relaxed overflow-hidden"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: 'vertical',
+          }}>
+            {lead.description}
+          </p>
+        ) : (
+          <div className="h-full" />
+        )}
+      </div>
+
+      {/* 4. Назначен + 5. Задачи — фиксированная высота */}
+      <div className="flex items-center justify-between pt-2 border-t border-gray-100 h-10 shrink-0">
+        {assignedName ? (
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="h-6 w-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+              {getInitials(assignedName)}
+            </div>
+            <span className="text-sm text-muted-foreground truncate">
+              {assignedName}
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground italic">
+            Не назначен
+          </span>
+        )}
+
+        {lead?.Task?.length > 0 && (
+          <Badge variant="secondary" className="text-xs gap-1 px-2">
+            <ClipboardList className="h-3 w-3" />
+            {lead.Task.length} {lead.Task.length === 1 ? "задача" : "задачи"}
+          </Badge>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default LeadCard;

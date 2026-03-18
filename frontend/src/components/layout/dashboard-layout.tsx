@@ -1,49 +1,23 @@
 "use client"
 
-
-import { SidebarProvider } from "../ui/sidebar";
-import { Header } from "./header";
-import AppSidebar from "./sidebar";
-
-// export function DashboardLayout({ children }: { children: React.ReactNode }) {
-//   return (
-//     <div className="flex h-screen">
-//       <SidebarProvider>
-//         <AppSidebar />
-//       </SidebarProvider>
-
-//       <div className="flex flex-col flex-1">
-//         <Header />
-
-//         <main className="p-6 overflow-auto">{children}</main>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-import { Bell, LogOut, User } from "lucide-react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "../ui/sidebar"
+import AppSidebar from "./sidebar"
+import { Bell, LogOut, User, Building2, ChevronDown } from "lucide-react"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
-import { useAuthStore } from "@/features/auth/store/auth.store";
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { usePathname } from "next/navigation"
+import { useAuthStore } from "@/features/auth/store/auth.store"
+import { useCompany } from "@/features/companies/hooks/use-company"
+import { useCompanies } from "@/features/companies/hooks/use-companies"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "CRM Дашборд",
@@ -67,18 +41,83 @@ const PAGE_TITLES: Record<string, string> = {
   "/parents-create": "New Customer",
   "/journal": "Student Journal",
   "/reports": "Reports",
-  "/settings": "Settings",
-};
+  "/settings": "Настройки",
+}
+
+// ─── Company Widget ─────────────────────────────────────────────────────────
+
+function CompanyWidget() {
+  const user = useAuthStore((s) => s.user)
+  const isSuperAdmin = user?.role === "SUPER_ADMIN"
+
+  const { data: currentCompany, isLoading: companyLoading } = useCompany(user?.companyId)
+  const { data: allCompanies } = useCompanies()
+
+  const companyName = currentCompany?.name ?? (companyLoading ? null : user?.companyId ?? "—")
+
+  if (isSuperAdmin) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-1.5 text-sm font-normal text-foreground/80 hover:text-foreground px-2"
+          >
+            <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            {companyLoading ? (
+              <Skeleton className="h-3.5 w-24" />
+            ) : (
+              <span className="max-w-[160px] truncate">{companyName}</span>
+            )}
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+            Все компании
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {allCompanies?.map((c) => (
+            <DropdownMenuItem key={c.id} className="gap-2">
+              <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm truncate">{c.name}</span>
+                <span className="text-[10px] text-muted-foreground font-mono truncate">{c.id}</span>
+              </div>
+              {c.id === user?.companyId && (
+                <span className="ml-auto text-[10px] text-primary font-medium">текущая</span>
+              )}
+            </DropdownMenuItem>
+          ))}
+          {(!allCompanies || allCompanies.length === 0) && (
+            <div className="px-2 py-1.5 text-xs text-muted-foreground">Нет данных</div>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 px-2 h-8 text-sm text-foreground/80">
+      <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+      {companyLoading ? (
+        <Skeleton className="h-3.5 w-24" />
+      ) : (
+        <span className="max-w-[160px] truncate">{companyName}</span>
+      )}
+    </div>
+  )
+}
+
+// ─── Top Bar ────────────────────────────────────────────────────────────────
 
 export default function TopBar() {
-  const { user, logout} = useAuthStore();
+  const { user, logout } = useAuthStore()
   const pathname = usePathname()
 
-  const pageTitle = PAGE_TITLES[pathname] || "Dashboard";
-
-  const handleLogout = () => {
-    logout();
-  };
+  const pageTitle = PAGE_TITLES[pathname] || "Dashboard"
+  const userInitial = user?.name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? "U"
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
@@ -87,96 +126,78 @@ export default function TopBar() {
         <h1 className="text-lg font-semibold text-foreground">{pageTitle}</h1>
       </div>
 
-      <div className="flex items-center gap-2">
-        {/* <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-medium">
-                  {unreadCount}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="w-[380px]">
-            <SheetHeader>
-              <div className="flex items-center justify-between">
-                <SheetTitle>Notifications</SheetTitle>
-                {unreadCount > 0 && (
-                  <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs text-muted-foreground">
-                    Mark all read
-                  </Button>
-                )}
-              </div>
-            </SheetHeader>
-            <div className="mt-4 space-y-2">
-              {notifications.map((n) => (
-                <div
-                  key={n.id}
-                  onClick={() => markAsRead(n.id)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                    n.read ? "bg-transparent" : "bg-primary/5"
-                  } hover:bg-muted`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className={`text-sm ${n.read ? "text-muted-foreground" : "text-foreground font-medium"}`}>
-                      {n.title}
-                    </p>
-                    {!n.read && <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5" />}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{n.message}</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">
-                    {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </SheetContent>
-        </Sheet> */}
+      <div className="flex items-center gap-1">
+        {/* Company */}
+        <CompanyWidget />
 
+        <div className="w-px h-4 bg-border mx-1" />
+
+        {/* User dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold">
-                {user?.id}{user?.email[0]}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1.5 text-sm font-normal text-foreground/80 hover:text-foreground px-2"
+            >
+              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[11px] font-semibold shrink-0">
+                {userInitial}
               </div>
+              <span className="max-w-[140px] truncate">{user?.email ?? "—"}</span>
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <div className="px-2 py-1.5">
-              <p className="text-sm font-medium">{user?.id} {user?.email}</p>
-              <p className="text-xs text-muted-foreground">{user?.email}</p>
+          <DropdownMenuContent align="end" className="w-52">
+            <div className="px-2 py-2 space-y-0.5">
+              <p className="text-sm font-medium truncate">{user?.name ?? user?.email}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              {user?.role && (
+                <p className="text-[10px] text-primary font-medium uppercase tracking-wide">{user.role}</p>
+              )}
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 cursor-pointer">
-              <User className="h-4 w-4" /> Profile
+            <DropdownMenuItem className="gap-2 cursor-pointer" asChild>
+              <a href="/settings">
+                <User className="h-4 w-4" /> Настройки
+              </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive">
-              <LogOut className="h-4 w-4" /> Logout
+            <DropdownMenuItem
+              onClick={logout}
+              className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+            >
+              <LogOut className="h-4 w-4" /> Выйти
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
+        {/* Bell — placeholder */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground relative"
+        >
+          <Bell className="h-4 w-4" />
+        </Button>
       </div>
     </header>
-  );
+  )
 }
 
-
+// ─── Dashboard Layout ───────────────────────────────────────────────────────
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
-    return (
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full">
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
         <AppSidebar />
-          <div className="flex-1 flex flex-col min-w-0">
-            <TopBar />
-            <main className="flex-1 p-6 overflow-auto scrollbar-thin">
-              {children}
-            </main>
-          </div>
+        <div className="flex-1 flex flex-col min-w-0">
+          <TopBar />
+          <main className="flex-1 p-6 overflow-auto scrollbar-thin">{children}</main>
         </div>
-      </SidebarProvider>
-    );
-  }
+      </div>
+    </SidebarProvider>
+  )
+}
