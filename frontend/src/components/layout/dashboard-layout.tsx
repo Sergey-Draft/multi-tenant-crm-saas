@@ -42,6 +42,8 @@ const PAGE_TITLES: Record<string, string> = {
   "/journal": "Student Journal",
   "/reports": "Reports",
   "/settings": "Настройки",
+  "/settings/user": "Профиль",
+  "/settings/backend-api": "Backend API",
 }
 
 // ─── Company Widget ─────────────────────────────────────────────────────────

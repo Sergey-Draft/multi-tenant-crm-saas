@@ -1,51 +1,3 @@
-// "use client";
-
-// import Link from "next/link";
-// import { usePathname } from "next/navigation";
-// import { menu } from "./sidebar-menu";
-// import { useUIStore } from "@/store/ui.store";
-
-// export function Sidebar() {
-//   const pathname = usePathname();
-//   const collapsed = useUIStore((s) => s.sidebarCollapsed);
-
-//   return (
-//     <div
-//       className={`${
-//         collapsed ? "w-16" : "w-64"
-//       } transition-all border-r bg-background flex flex-col `}
-//     >
-//       <div className="h-14 flex items-center px-4 border-b">
-//         {!collapsed && <span className="font-semibold text-lg">CRM</span>}
-//       </div>
-
-//       <nav className="flex flex-col p-2 gap-1">
-//         {menu.map((item) => {
-//           const Icon = item.icon;
-
-//           const active = pathname === item.href;
-
-//           return (
-//             <Link
-//               key={item.href}
-//               href={item.href}
-//               className={`flex items-center ${
-//                 collapsed ? "justify-center" : "gap-3"
-//               } px-3 py-2 rounded-md text-sm transition
-//               ${active ? "bg-muted font-medium" : "hover:bg-muted/50"}
-//               `}
-//             >
-//               <Icon className="h-4 w-4" />
-
-//               {!collapsed && item.title}
-//             </Link>
-//           );
-//         })}
-//       </nav>
-//     </div>
-//   );
-// }
-
 
 
 "use client"
@@ -54,7 +6,7 @@ import {
   BarChart3, BookOpen, CalendarDays, ClipboardList, Contact2,
   CreditCard, FileText, GraduationCap, LayoutDashboard, ListChecks,
   Settings, Shield, UserPlus, Users, Wallet, BookMarked, RefreshCw, UserCheck,
-  ExternalLink,
+  ExternalLink, Code , UserRoundPen  
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -99,6 +51,8 @@ const NAV_SECTIONS: NavSection[] = [
     label: "Система/Backend",
     items: [
       { title: "Настройки", url: "/settings", icon: Settings },
+      { title: "Профиль", url: "/settings/user", icon: UserRoundPen },
+      { title: "Backend API", url: "/settings/backend-api", icon: Code },
     ],
   },
   {
