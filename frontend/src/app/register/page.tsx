@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  GraduationCap,
   Mail,
   Lock,
   Loader2,
   Building2,
   User,
+  Smile
 } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { redirect } from "next/navigation";
@@ -54,7 +54,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-primary mx-auto flex items-center justify-center mb-4">
-            <GraduationCap className="h-8 w-8 text-primary-foreground" />
+            <Smile className="h-8 w-8 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Draft CRM</h1>
           {/* <p className="text-sm text-muted-foreground mt-1">
