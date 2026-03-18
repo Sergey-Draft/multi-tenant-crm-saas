@@ -62,22 +62,13 @@ export class LeadsService {
     return this.prisma.lead.findMany({
       where: { companyId },
       include: {
-        client: true,
+        client: { select: { name: true, phone: true, email: true } },
+        assignedTo: { select: { id: true, name: true, email: true } },
         Task: {
           include: {
-            assignedTo: {
-              select: {
-                id: true,
-                email: true,
-              }
-            },
-            createdBy: { 
-              select: {
-                id: true,
-                email: true,
-              }
-            }
-          }
+            assignedTo: { select: { id: true, name: true } },
+            createdBy: { select: { id: true, name: true } },
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -128,7 +119,12 @@ export class LeadsService {
     if (dto.description !== undefined) data.description = dto.description;
     if (dto.status !== undefined) data.status = dto.status;
     if (dto.dateDue !== undefined) data.dateDue = new Date(dto.dateDue);
-    if (dto.dateDue !== undefined) data.assignedToId = dto.assignedToId;
+
+    if (dto.assignedToId !== undefined) {
+      data.assignedTo = dto.assignedToId
+        ? { connect: { id: dto.assignedToId } }
+        : { disconnect: true };
+    }
 
     if (dto.clientId) {
       data.client = {
