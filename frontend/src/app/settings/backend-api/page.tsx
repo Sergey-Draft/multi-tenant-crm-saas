@@ -296,13 +296,37 @@ export default function BackendApiPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg border border-dashed border-muted-foreground/30 p-10 text-center space-y-3">
-                <Globe className="h-10 w-10 mx-auto text-muted-foreground/25" />
-                <p className="text-sm font-medium text-muted-foreground">Swagger не настроен</p>
-                <p className="text-xs text-muted-foreground/60">
-                  Добавьте <code className="bg-muted px-1 rounded">@nestjs/swagger</code> в{" "}
-                  <code className="bg-muted px-1 rounded">main.ts</code>
-                </p>
+              <div className="space-y-3">
+                <a
+                  href="http://localhost:3001/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors group"
+                >
+                  <div className="flex items-center gap-3">
+                    <Globe className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm font-semibold">Swagger UI</p>
+                      <p className="text-xs text-muted-foreground font-mono">http://localhost:3001/api</p>
+                    </div>
+                  </div>
+                  <Badge className="text-xs">Открыть ↗</Badge>
+                </a>
+                <a
+                  href="http://localhost:3001/api/json"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Code2 className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-semibold">OpenAPI JSON</p>
+                      <p className="text-xs text-muted-foreground font-mono">http://localhost:3001/api/json</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs">JSON ↗</Badge>
+                </a>
               </div>
               <Separator />
               <div className="space-y-2">

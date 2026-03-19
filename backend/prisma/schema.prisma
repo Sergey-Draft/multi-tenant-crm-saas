@@ -39,10 +39,10 @@ model User {
 }
 
 model Client {
-  id        String @id @default(uuid())
+  id        String  @id @default(uuid())
   name      String
-  email     String
-  phone     String
+  email     String?
+  phone     String?
   companyId String
 
   company   Company  @relation(fields: [companyId], references: [id])

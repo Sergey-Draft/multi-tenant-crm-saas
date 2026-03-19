@@ -82,7 +82,7 @@ function CompanyWidget() {
           <DropdownMenuSeparator />
           {allCompanies?.map((c) => (
             <DropdownMenuItem key={c.id} className="gap-2">
-              <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+              {/* <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> */}
               <div className="flex flex-col min-w-0">
                 <span className="text-sm truncate">{c.name}</span>
                 <span className="text-[10px] text-muted-foreground font-mono truncate">{c.id}</span>

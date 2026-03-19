@@ -438,8 +438,13 @@ export default function SettingsOverviewPage() {
   const user = useAuthStore((s) => s.user);
   const { data: company } = useCompany(user?.companyId);
 
-  const AccessToken = localStorage.getItem("accessToken");
-  const RefreshToken = localStorage.getItem("refreshToken");
+  const [AccessToken,  setAccessToken]  = useState<string | null>(null);
+  const [RefreshToken, setRefreshToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAccessToken(localStorage.getItem("accessToken"));
+    setRefreshToken(localStorage.getItem("refreshToken"));
+  }, []);
 
   function checkToken(token: string | null): string {
     if (!token) return "Неизвестное значение";
@@ -546,7 +551,7 @@ export default function SettingsOverviewPage() {
           href="/settings/backend-api"
           icon={Code2}
           title="Backend API"
-          description="Swagger, интерактивное тестирование всех эндпоинтов с текущим JWT."
+          description="Swagger UI, OpenAPI JSON, интерактивное тестирование эндпоинтов с текущим JWT."
           badge="Dev"
         />
       </div>

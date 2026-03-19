@@ -87,6 +87,23 @@ const NAV_SECTIONS: NavSection[] = [
   },
 ];
 
+/** Все внутренние URL — чтобы не подсвечивать /dashboard на /dashboard/clients и /settings на /settings/user */
+const ALL_NAV_URLS = NAV_SECTIONS.flatMap((s) =>
+  s.items.filter((i) => !i.external).map((i) => i.url)
+);
+
+function isNavItemActive(pathname: string, itemUrl: string): boolean {
+  if (pathname === itemUrl) return true;
+  if (!pathname.startsWith(itemUrl + "/")) return false;
+  const hasMoreSpecific = ALL_NAV_URLS.some(
+    (u) =>
+      u !== itemUrl &&
+      u.startsWith(itemUrl + "/") &&
+      (pathname === u || pathname.startsWith(u + "/"))
+  );
+  return !hasMoreSpecific;
+}
+
 export default function AppSidebar() {
   const { state } = useSidebar();
   const pathname = usePathname();
@@ -123,7 +140,7 @@ export default function AppSidebar() {
                     <SidebarMenuItem key={item.url}>
                       <SidebarMenuButton
                         asChild
-                        isActive={!item.external && (pathname === item.url || pathname.startsWith(item.url + "/"))}
+                        isActive={!item.external && isNavItemActive(pathname, item.url)}
                       >
                         {item.external ? (
                           <a

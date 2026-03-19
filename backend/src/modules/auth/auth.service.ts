@@ -97,6 +97,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         companyId: user.companyId,
+        name: user.name
       },
     };
   }
