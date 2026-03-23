@@ -9,11 +9,17 @@ import { ClientsModule } from './modules/clients/clients.module';
 import { LeadsModule } from './modules/leads/leads.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'production'
+          ? '.env.production'
+          : '.env.development',
     }),
     PrismaModule,
     CompanyModule,
@@ -22,6 +28,8 @@ import { UsersModule } from './modules/users/users.module';
     LeadsModule,
     TasksModule,
     UsersModule,
+    DashboardModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

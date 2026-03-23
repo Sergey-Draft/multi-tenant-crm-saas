@@ -19,14 +19,20 @@ const roleHierarchy = {
   EMPLOYEE: 1,
 };
 
+const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  companyId: true,
+  createdAt: true,
+};
+
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-
   async create(dto: CreateUserDto, currentUser: any) {
-
-    // Только ADMIN / OWNER / SUPER_ADMIN
     if (
       currentUser.role !== UserRole.ADMIN &&
       currentUser.role !== UserRole.OWNER &&
@@ -34,43 +40,35 @@ export class UsersService {
     ) {
       throw new ForbiddenException('You cannot create users');
     }
-  
+
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
-  
+
     if (existing) {
       throw new ConflictException('User already exists');
     }
-  
+
     const hash = await bcrypt.hash(dto.password, 10);
-  
     const role = dto.role ?? UserRole.EMPLOYEE;
-  
-    // ADMIN не может создавать OWNER
-    if (
-      currentUser.role === UserRole.ADMIN &&
-      role === UserRole.OWNER
-    ) {
+
+    if (currentUser.role === UserRole.ADMIN && role === UserRole.OWNER) {
       throw new ForbiddenException('Admin cannot create OWNER');
     }
-  
+
     const user = await this.prisma.user.create({
       data: {
+        name: dto.name,
         email: dto.email,
         password: hash,
         role,
         companyId: currentUser.companyId,
       },
+      select: userSelect,
     });
-  
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    };
-  }
 
+    return user;
+  }
 
   /* =============================
      GET ALL USERS
@@ -78,11 +76,13 @@ export class UsersService {
   async findAll(currentUser: any) {
     if (currentUser.role === UserRole.SUPER_ADMIN) {
       return this.prisma.user.findMany({
+        select: userSelect,
         orderBy: { createdAt: 'desc' },
       });
     }
 
     return this.prisma.user.findMany({
+      select: userSelect,
       where: { companyId: currentUser.companyId },
       orderBy: { createdAt: 'desc' },
     });
@@ -94,6 +94,7 @@ export class UsersService {
   async findOne(id: string, currentUser: any) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      select: { ...userSelect, companyId: true },
     });
 
     if (!user) throw new NotFoundException('User not found');
@@ -111,18 +112,12 @@ export class UsersService {
   /* =============================
      UPDATE USER DATA
   ============================== */
-  async update(
-    id: string,
-    dto: UpdateUserDto,
-    currentUser: any,
-  ) {
+  async update(id: string, dto: UpdateUserDto, currentUser: any) {
     const target = await this.findOne(id, currentUser);
 
-    // Нельзя редактировать равного или выше
     if (
       currentUser.role !== UserRole.SUPER_ADMIN &&
-      roleHierarchy[currentUser.role] <=
-        roleHierarchy[target.role]
+      roleHierarchy[currentUser.role] <= roleHierarchy[target.role]
     ) {
       throw new ForbiddenException(
         'Cannot modify user with equal or higher role',
@@ -132,29 +127,23 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: dto,
+      select: userSelect,
     });
   }
 
   /* =============================
      CHANGE ROLE
   ============================== */
-  async changeRole(
-    id: string,
-    dto: ChangeRoleDto,
-    currentUser: any,
-  ) {
+  async changeRole(id: string, dto: ChangeRoleDto, currentUser: any) {
     const target = await this.findOne(id, currentUser);
 
     if (currentUser.id === target.id) {
-      throw new ForbiddenException(
-        'You cannot change your own role',
-      );
+      throw new ForbiddenException('You cannot change your own role');
     }
 
     if (
       currentUser.role !== UserRole.SUPER_ADMIN &&
-      roleHierarchy[currentUser.role] <=
-        roleHierarchy[target.role]
+      roleHierarchy[currentUser.role] <= roleHierarchy[target.role]
     ) {
       throw new ForbiddenException(
         'Cannot change role of equal or higher user',
@@ -163,8 +152,7 @@ export class UsersService {
 
     if (
       currentUser.role !== UserRole.SUPER_ADMIN &&
-      roleHierarchy[currentUser.role] <=
-        roleHierarchy[dto.role]
+      roleHierarchy[currentUser.role] <= roleHierarchy[dto.role]
     ) {
       throw new ForbiddenException(
         'Cannot promote user to equal or higher role',
@@ -174,26 +162,7 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: { role: dto.role },
+      select: userSelect,
     });
   }
-
-  /* =============================
-     DEACTIVATE USER
-  ============================== */
-  // async deactivate(id: string, currentUser: any) {
-  //   const target = await this.findOne(id, currentUser);
-
-  //   if (
-  //     currentUser.role !== UserRole.SUPER_ADMIN &&
-  //     roleHierarchy[currentUser.role] <=
-  //       roleHierarchy[target.role]
-  //   ) {
-  //     throw new ForbiddenException();
-  //   }
-
-  //   return this.prisma.user.update({
-  //     where: { id },
-  //     data: { isActive: false },
-  //   });
-  // }
 }

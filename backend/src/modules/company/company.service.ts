@@ -10,7 +10,7 @@ export class CompanyService {
     return this.prisma.company.create({
       data: {
         name: dto.name,
-        plan: dto.plan,
+        plan: dto.plan ?? 'basic',
       },
     });
   }

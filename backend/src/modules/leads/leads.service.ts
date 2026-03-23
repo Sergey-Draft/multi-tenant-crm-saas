@@ -2,17 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { PrismaService } from '../../prisma/prisma.service';
-import { NotFoundError } from 'rxjs';
 import { LeadStatus } from '@prisma/client';
 import { addWeeks } from 'date-fns';
 import { ChangeLeadStatusDto } from './dto/change-status.dto';
-
-
-// TODO: duplicating leads when data the same
+import { AuditLogService } from '../audit-log/audit-log.service';
 
 @Injectable()
 export class LeadsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditLog: AuditLogService,
+  ) {}
 
   async create(dto: CreateLeadDto, companyId: string, userId?: string) {
     const client = await this.prisma.client.findFirst({
@@ -45,7 +45,7 @@ export class LeadsService {
     }
 
     const dateDue = dto.dateDue || addWeeks(new Date(), 2);
-    return this.prisma.lead.create({
+    const lead = await this.prisma.lead.create({
       data: {
         title: dto.title,
         status: dto.status as LeadStatus,
@@ -53,31 +53,30 @@ export class LeadsService {
         description: dto.description,
         dateDue: dateDue,
         companyId,
-        assignedToId
+        assignedToId,
       },
     });
+    await this.auditLog.log({
+      entityType: 'Lead',
+      entityId: lead.id,
+      action: 'CREATE',
+      userId,
+      companyId,
+    });
+    return lead;
   }
 
   async findAll(companyId: string) {
     return this.prisma.lead.findMany({
       where: { companyId },
       include: {
-        client: true,
+        client: { select: { name: true, phone: true, email: true } },
+        assignedTo: { select: { id: true, name: true, email: true } },
         Task: {
           include: {
-            assignedTo: {
-              select: {
-                id: true,
-                email: true,
-              }
-            },
-            createdBy: { 
-              select: {
-                id: true,
-                email: true,
-              }
-            }
-          }
+            assignedTo: { select: { id: true, name: true } },
+            createdBy: { select: { id: true, name: true } },
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -113,7 +112,7 @@ export class LeadsService {
     return lead;
   }
 
-  async update(id: string, companyId: string, dto: UpdateLeadDto) {
+  async update(id: string, companyId: string, dto: UpdateLeadDto, userId?: string) {
     const lead = await this.prisma.lead.findFirst({
       where: { id, companyId },
     });
@@ -128,7 +127,12 @@ export class LeadsService {
     if (dto.description !== undefined) data.description = dto.description;
     if (dto.status !== undefined) data.status = dto.status;
     if (dto.dateDue !== undefined) data.dateDue = new Date(dto.dateDue);
-    if (dto.dateDue !== undefined) data.assignedToId = dto.assignedToId;
+
+    if (dto.assignedToId !== undefined) {
+      data.assignedTo = dto.assignedToId
+        ? { connect: { id: dto.assignedToId } }
+        : { disconnect: true };
+    }
 
     if (dto.clientId) {
       data.client = {
@@ -136,13 +140,22 @@ export class LeadsService {
       };
     }
 
-    return this.prisma.lead.update({
+    const updated = await this.prisma.lead.update({
       where: { id },
       data: data,
     });
+    await this.auditLog.log({
+      entityType: 'Lead',
+      entityId: id,
+      action: 'UPDATE',
+      userId,
+      companyId,
+      metadata: dto as Record<string, unknown>,
+    });
+    return updated;
   }
 
-  async remove(id: string, companyId: string) {
+  async remove(id: string, companyId: string, userId?: string) {
     const lead = await this.prisma.lead.findFirst({
       where: { id, companyId },
     });
@@ -151,6 +164,13 @@ export class LeadsService {
 
     await this.prisma.lead.delete({
       where: { id },
+    });
+    await this.auditLog.log({
+      entityType: 'Lead',
+      entityId: id,
+      action: 'DELETE',
+      userId,
+      companyId,
     });
 
     return {

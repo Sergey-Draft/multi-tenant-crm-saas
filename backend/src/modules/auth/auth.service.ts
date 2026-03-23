@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
@@ -32,9 +36,10 @@ export class AuthService {
     const hash = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
       data: {
+        name: dto.name,
         email: dto.email,
         password: hash,
-        role: UserRole.OWNER,
+        role: dto.role,
         companyId: company.id,
       },
     });
@@ -47,7 +52,9 @@ export class AuthService {
       },
       user: {
         id: user.id,
+        name: user.name,
         email: user.email,
+        role: user.role,
       },
     };
   }
@@ -56,32 +63,41 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
-  
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-  
+
     const isMatch = await bcrypt.compare(dto.password, user.password);
-  
+
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
-  
+
     const payload = {
       sub: user.id,
       companyId: user.companyId,
       email: user.email,
-      role: user.role
+      role: user.role,
     };
-  
-    const accessToken = this.jwt.sign(payload);
-  
+
+    const accessToken = this.jwt.sign(payload, {
+      expiresIn: '15m',
+    });
+
+    const refreshToken = this.jwt.sign(payload, {
+      expiresIn: '7d',
+    });
+
     return {
       accessToken,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
         companyId: user.companyId,
+        name: user.name
       },
     };
   }
@@ -92,12 +108,33 @@ export class AuthService {
     });
     return {
       userId: userData?.id,
+      name: userData?.name,
       email: userData?.email,
       companyId: userData?.companyId,
       createdAt: userData?.createdAt,
-      role: userData?.role
+      role: userData?.role,
     };
   }
 
+  async refresh(refreshToken: string) {
+    try {
+      const payload = this.jwt.verify(refreshToken);
 
+      const newAccessToken = this.jwt.sign(
+        {
+          sub: payload.sub,
+          companyId: payload.companyId,
+          email: payload.email,
+          role: payload.role,
+        },
+        { expiresIn: '15m' },
+      );
+
+      return {
+        accessToken: newAccessToken,
+      };
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
 }
