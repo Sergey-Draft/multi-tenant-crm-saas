@@ -142,7 +142,7 @@ function UserProfileCard() {
           </div>
           <ReadonlyField label="User ID"    value={user.id ?? user.userId ?? "—"} mono copy={true} />
           <ReadonlyField label="Company ID" value={user.companyId ?? "—"}         mono copy= {true}/>
-          <ReadonlyField label="Роль"       value={user.role ?? "—"} />
+          <ReadonlyField label="Роль"       value={user.role ?? "—"} copy={false} />
           {user.createdAt && (
             <ReadonlyField label="Создан" value={new Date(user.createdAt).toLocaleString("ru")} copy={false} />
           )}
@@ -186,7 +186,7 @@ function TenantCard() {
               <ReadonlyField label="Company ID" value={company?.id ?? user?.companyId ?? "—"} mono copy={true} />
               <ReadonlyField label="Название"   value={company?.name ?? "—"} copy={true} />
               {company?.createdAt && (
-                <ReadonlyField label="Создана" value={new Date(company.createdAt).toLocaleString("ru")} />
+                <ReadonlyField label="Создана" value={new Date(company.createdAt).toLocaleString("ru")} copy={false} />
               )}
             </div>
             <div className="flex items-start gap-2 rounded-lg border border-dashed p-3 text-xs text-muted-foreground">

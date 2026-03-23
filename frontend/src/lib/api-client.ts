@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import axios from "axios";
 import { env } from './../../env';
 
 export const api = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
 
@@ -52,7 +52,7 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem("refreshToken");
 
       try {
-        const res = await axios.post(`http://localhost:3001/auth/refresh`, {
+        const res = await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
           refreshToken,
         });
 

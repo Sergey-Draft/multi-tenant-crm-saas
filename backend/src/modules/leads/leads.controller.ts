@@ -48,7 +48,7 @@ export class LeadsController {
   @ApiResponse({ status: 404, description: 'Лид не найден' })
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateLeadDto, @CurrentUser() user) {
-    return this.leadsService.update(id, user.companyId, dto);
+    return this.leadsService.update(id, user.companyId, dto, user.userId);
   }
 
   @ApiOperation({ summary: 'Удалить лид' })
@@ -57,7 +57,7 @@ export class LeadsController {
   @ApiResponse({ status: 404, description: 'Лид не найден' })
   @Delete(':id')
   remove(@Param('id') id: string, @CurrentUser() user) {
-    return this.leadsService.remove(id, user.companyId);
+    return this.leadsService.remove(id, user.companyId, user.userId);
   }
 
   @ApiOperation({ summary: 'Сменить статус лида' })

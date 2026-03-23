@@ -70,7 +70,7 @@ const LeadsKanban = () => {
     <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin width-[1440px]">
       {COLUMNS.map((item: any) => (
         <div
-          className="flex flex-col min-w-[20vw] w-[20vw] shrink-0"
+          className="flex flex-col min-w-[260px] w-[20vw] max-w-[320px] shrink-0"
           key={item.status}
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => handleDrop(e, item.status)}
