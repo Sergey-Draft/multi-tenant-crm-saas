@@ -10,6 +10,7 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     TasksModule,
     UsersModule,
     DashboardModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

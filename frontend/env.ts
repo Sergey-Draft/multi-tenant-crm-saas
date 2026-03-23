@@ -1,5 +1,5 @@
 export const env = {
-    NEXT_BASE_API: process.env.NEXT_BASE_API,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   };
   
   export type Env = typeof env;

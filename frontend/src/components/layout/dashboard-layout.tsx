@@ -24,7 +24,8 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/users": "Пользователи",
   "/dashboard/clients": "Клиенты",
   "/dashboard/leads": "Лиды",
-  "/tasks": "Tasks",
+  "/dashboard/audit-logs": "Журнал аудита",
+  "/tasks": "Задачи",
   "/contracts": "Contracts",
   "/payments": "Payments & Costs",
   "/payments-schedule": "Payment Schedule",
@@ -159,7 +160,7 @@ export default function TopBar() {
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 cursor-pointer" asChild>
-              <a href="/settings">
+              <a href="/settings/user">
                 <User className="h-4 w-4" /> Настройки
               </a>
             </DropdownMenuItem>

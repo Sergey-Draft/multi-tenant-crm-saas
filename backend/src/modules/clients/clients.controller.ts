@@ -22,7 +22,7 @@ export class ClientsController {
   @ApiResponse({ status: 400, description: 'Невалидные данные' })
   @Post()
   create(@Body() dto: CreateClientDto, @CurrentUser() user) {
-    return this.clientsService.create(dto, user.companyId);
+    return this.clientsService.create(dto, user.companyId, user.userId);
   }
 
   @ApiOperation({ summary: 'Список клиентов компании' })
@@ -47,7 +47,7 @@ export class ClientsController {
   @ApiResponse({ status: 404, description: 'Клиент не найден' })
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateClientDto, @CurrentUser() user) {
-    return this.clientsService.update(id, user.companyId, dto);
+    return this.clientsService.update(id, user.companyId, dto, user.userId);
   }
 
   @ApiOperation({ summary: 'Удалить клиента' })
@@ -56,6 +56,6 @@ export class ClientsController {
   @ApiResponse({ status: 404, description: 'Клиент не найден' })
   @Delete(':id')
   remove(@Param('id') id: string, @CurrentUser() user) {
-    return this.clientsService.remove(id, user.companyId);
+    return this.clientsService.remove(id, user.companyId, user.userId);
   }
 }

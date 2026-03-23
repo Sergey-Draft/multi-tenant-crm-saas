@@ -121,3 +121,18 @@ enum UserRole {
   IN_PROGRESS
   DONE
 }
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String   // Lead | Client | Task
+  entityId   String
+  action     String   // CREATE | UPDATE | DELETE
+  userId     String?
+  companyId  String
+  metadata   Json?    // { field: value } для UPDATE
+  createdAt  DateTime @default(now())
+
+  @@index([companyId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}

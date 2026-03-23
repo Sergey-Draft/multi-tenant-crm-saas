@@ -9,6 +9,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { ChangeTaskStatusDto } from './dto/change-status.dto';
 import { UserRole, TaskStatus, Prisma, $Enums } from '@prisma/client';
+import { AuditLogService } from '../audit-log/audit-log.service';
 
 interface AssignedUser {
   id: string;
@@ -21,7 +22,10 @@ interface AssignedUser {
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditLog: AuditLogService,
+  ) {}
 
   async create(dto: CreateTaskDto, user: any) {
  
@@ -60,7 +64,7 @@ export class TasksService {
       }
     }
 
-    return this.prisma.task.create({
+    const task = await this.prisma.task.create({
       data: {
         title: dto.title,
         leadId: dto.leadId,
@@ -69,6 +73,14 @@ export class TasksService {
         companyId: user.companyId,
       },
     });
+    await this.auditLog.log({
+      entityType: 'Task',
+      entityId: task.id,
+      action: 'CREATE',
+      userId: user.userId,
+      companyId: user.companyId,
+    });
+    return task;
   }
 
   async findAll(user: any) {
@@ -120,10 +132,19 @@ export class TasksService {
     if (dto.deadline !== undefined) data.deadline = new Date(dto.deadline);
     if (dto.status !== undefined) data.status = dto.status;
 
-    return this.prisma.task.update({
+    const updated = await this.prisma.task.update({
       where: { id },
       data,
     });
+    await this.auditLog.log({
+      entityType: 'Task',
+      entityId: id,
+      action: 'UPDATE',
+      userId: user.userId,
+      companyId: user.companyId,
+      metadata: dto as Record<string, unknown>,
+    });
+    return updated;
   }
 
   async changeStatus(id: string, dto: ChangeTaskStatusDto, user: any) {
@@ -154,12 +175,18 @@ export class TasksService {
     await this.prisma.task.delete({
       where: { id },
     });
+    await this.auditLog.log({
+      entityType: 'Task',
+      entityId: id,
+      action: 'DELETE',
+      userId: user.userId,
+      companyId: user.companyId,
+    });
 
     return {
       status: 'ok',
       message: 'Task deleted successfully',
       id: id,
     };
-
   }
 }

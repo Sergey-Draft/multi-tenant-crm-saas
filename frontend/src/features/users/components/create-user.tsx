@@ -7,6 +7,7 @@ import { USER_ROLE_OPTIONS } from "@/lib/options";
 
 export default function CreateUser() {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("EMPLOYEE");
 
@@ -16,6 +17,7 @@ export default function CreateUser() {
     e.preventDefault();
 
     const data: CreateUserDto = {
+      name,
       email,
       password,
       role,
@@ -27,6 +29,12 @@ export default function CreateUser() {
   return (
     <div>
       <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
+      <input
+          placeholder="Имя"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="border p-2"
+        />
         <input
           placeholder="Email"
           value={email}

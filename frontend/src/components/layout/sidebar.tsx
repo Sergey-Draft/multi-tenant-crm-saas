@@ -1,12 +1,11 @@
 
-
 "use client"
 
 import {
   BarChart3, BookOpen, CalendarDays, ClipboardList, Contact2,
   CreditCard, FileText, GraduationCap, LayoutDashboard, ListChecks,
   Settings, Shield, UserPlus, Users, Wallet, BookMarked, RefreshCw, UserCheck,
-  ExternalLink, Code , UserRoundPen  
+  ExternalLink, Code, UserRoundPen, ScrollText,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -45,6 +44,7 @@ const NAV_SECTIONS: NavSection[] = [
       { title: "Клиенты", url: "/dashboard/clients", icon: Users },
       { title: "Пользователи", url: "/dashboard/users", icon: Users },
       { title: "Лиды", url: "/dashboard/leads", icon: ClipboardList },
+      { title: "Журнал аудита", url: "/dashboard/audit-logs", icon: ScrollText },
     ],
   },
   {
@@ -59,30 +59,6 @@ const NAV_SECTIONS: NavSection[] = [
     label: "Документация",
     items: [
       { title: "API Docs", url: "https://github.com/Sergey-Draft/multi-tenant-crm-saas/blob/main/docs/README.md", icon: FileText, external: true },
-      { title: "Payments", url: "/payments", icon: CreditCard },
-      { title: "Schedule", url: "/payments-schedule", icon: CalendarDays },
-      { title: "Debt", url: "/debt", icon: Wallet },
-    ],
-  },
-  {
-    label: "Education",
-    items: [
-      { title: "Groups", url: "/groups", icon: Users,  },
-      { title: "Lessons", url: "/lessons", icon: BookOpen,  },
-      { title: "Class Schedule", url: "/class-schedule", icon: CalendarDays,  },
-      { title: "Students", url: "/edit-groups", icon: GraduationCap,  },
-      { title: "Topics", url: "/schedule-view", icon: BookMarked,  },
-      { title: "Compensations", url: "/working-out", icon: RefreshCw, },
-      { title: "Assignments", url: "/appointments", icon: UserCheck,  },
-      { title: "Attendance", url: "/attendance-reports", icon: ClipboardList,  },
-    ],
-  },
-  {
-    label: "Users",
-    items: [
-      { title: "Access", url: "/access", icon: Shield,},
-      { title: "New Customer", url: "/parents-create", icon: UserPlus },
-      { title: "Journal", url: "/journal", icon: Contact2 },
     ],
   },
 ];
