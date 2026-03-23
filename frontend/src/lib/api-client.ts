@@ -68,7 +68,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
         return api(originalRequest);
-      } catch (err) {
+      } catch {
         localStorage.clear();
         window.location.href = "/login";
       }
