@@ -16,6 +16,10 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'production'
+          ? '.env.production'
+          : '.env.development',
     }),
     PrismaModule,
     CompanyModule,

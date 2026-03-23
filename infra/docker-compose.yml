@@ -1,16 +1,7 @@
-networks:
-  crm_net:
-    driver: bridge
-
-volumes:
-  pgdata:
-  redisdata:
-
 services:
   postgres:
     image: postgres:15
-    container_name: crm_postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: crm
       POSTGRES_PASSWORD: crm
@@ -19,19 +10,23 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      - crm_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crm -d crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   redis:
     image: redis:7
-    container_name: crm_redis
-    restart: always
+    restart: unless-stopped
     volumes:
       - redisdata:/data
     ports:
       - "6379:6379"
-    networks:
-      - crm_net
+
+volumes:
+  pgdata:
+  redisdata:
 
 
 
