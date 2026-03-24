@@ -6,6 +6,16 @@ WORKDIR /app
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
 
+FROM base AS deps
+ENV YARN_NETWORK_TIMEOUT=600000
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --network-timeout 600000
+
+FROM deps AS build
+COPY . .
+RUN npx prisma generate
+RUN yarn build
+
 FROM base AS runtime
 ENV NODE_ENV=production
 ENV YARN_NETWORK_TIMEOUT=600000
