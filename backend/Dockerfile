@@ -24,7 +24,11 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production --network-timeout 600000
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 EXPOSE 3001
-CMD ["node", "dist/src/main.js"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
