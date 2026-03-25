@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import { GlobalLoader } from "@/components/globalLoader/global-loader";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -45,8 +46,7 @@ export default function LoginPage() {
 
     e.preventDefault();
     clearError();
-    await register(data);
-    redirect("/login");
+    const response = await register(data);
   };
 
   return (
@@ -116,6 +116,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 // placeholder="••••••••"
@@ -155,7 +156,6 @@ export default function LoginPage() {
           </div>
 
           <Button className="w-full !text-base !h-10" type="submit" disabled={isLoading}>
-            {isLoading ? <Loader2 className="w-full gap-2 " /> : null}
             Зарегистрироваться
           </Button>
         </form>
@@ -166,6 +166,7 @@ export default function LoginPage() {
             <Link href={"/login"}>Войти</Link>
             </Button>
           </div>
+          {isLoading ? <GlobalLoader isLoading={isLoading} /> : null}
       </div>
     </div>
   );

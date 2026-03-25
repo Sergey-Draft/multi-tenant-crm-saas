@@ -77,6 +77,11 @@ export function AuditLogsTable() {
         <Select
           value={entityType}
           onValueChange={(v) => {
+            if(v === 'all') {
+              setEntityType("");
+              setPage(1);
+              return
+            }
             setEntityType(v as AuditEntityType | "");
             setPage(1);
           }}
@@ -85,7 +90,7 @@ export function AuditLogsTable() {
             <SelectValue placeholder="Тип сущности" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="11">Все</SelectItem>
+            <SelectItem value="all">Все</SelectItem>
             <SelectItem value="Lead">Лид</SelectItem>
             <SelectItem value="Client">Клиент</SelectItem>
             <SelectItem value="Task">Задача</SelectItem>
@@ -94,6 +99,11 @@ export function AuditLogsTable() {
         <Select
           value={action}
           onValueChange={(v) => {
+            if(v === 'all') {
+              setAction("");
+              setPage(1);
+              return
+            }
             setAction(v as AuditAction | "");
             setPage(1);
           }}
@@ -102,7 +112,7 @@ export function AuditLogsTable() {
             <SelectValue placeholder="Действие" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="22">Все</SelectItem>
+            <SelectItem value="all">Все</SelectItem>
             <SelectItem value="CREATE">Создание</SelectItem>
             <SelectItem value="UPDATE">Изменение</SelectItem>
             <SelectItem value="DELETE">Удаление</SelectItem>

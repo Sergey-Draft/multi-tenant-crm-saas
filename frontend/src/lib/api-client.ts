@@ -1,5 +1,4 @@
- 
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { env } from './../../env';
 
 export const api = axios.create({
@@ -77,3 +76,16 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+/** NestJS / class-validator often return `{ message: string | string[] }` in the body; Axios still sets `error.message` to the generic status text. */
+export function getApiErrorMessage(error: unknown, fallback = "Ошибка запроса"): string {
+  if (isAxiosError(error)) {
+    const data = error.response?.data as { message?: string | string[] } | undefined;
+    if (data?.message != null) {
+      return Array.isArray(data.message) ? data.message.join(", ") : String(data.message);
+    }
+    return error.message;
+  }
+  if (error instanceof Error) return error.message;
+  return fallback;
+}

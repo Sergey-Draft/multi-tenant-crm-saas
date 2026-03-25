@@ -18,6 +18,7 @@ import { useAuthStore } from "@/features/auth/store/auth.store"
 import { useCompany } from "@/features/companies/hooks/use-company"
 import { useCompanies } from "@/features/companies/hooks/use-companies"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DashboardTitleArea } from "./dashboard-breadcrumbs"
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "CRM Дашборд",
@@ -45,6 +46,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/settings": "Настройки",
   "/settings/user": "Профиль",
   "/settings/backend-api": "Backend API",
+  "/documentation": "API Docs",
 }
 
 // ─── Company Widget ─────────────────────────────────────────────────────────
@@ -123,10 +125,12 @@ export default function TopBar() {
   const userInitial = user?.name?.[0] ?? user?.email?.[0]?.toUpperCase() ?? "U"
 
   return (
-    <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-      <div className="flex items-center gap-3">
-        <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-        <h1 className="text-lg font-semibold text-foreground">{pageTitle}</h1>
+    <header className="min-h-14 border-b border-border bg-card flex items-center justify-between gap-4 px-4 py-2.5 shrink-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <SidebarTrigger className="shrink-0 text-muted-foreground hover:text-foreground" />
+        <div className="min-w-0 flex-1">
+          <DashboardTitleArea pathname={pathname} fallbackTitle={pageTitle} />
+        </div>
       </div>
 
       <div className="flex items-center gap-1">
