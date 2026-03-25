@@ -57,9 +57,7 @@ const NAV_SECTIONS: NavSection[] = [
   },
   {
     label: "Документация",
-    items: [
-      { title: "API Docs", url: "https://github.com/Sergey-Draft/multi-tenant-crm-saas/blob/main/docs/README.md", icon: FileText, external: true },
-    ],
+    items: [{ title: "API Docs", url: "/documentation", icon: FileText }],
   },
 ];
 

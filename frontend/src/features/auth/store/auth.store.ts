@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import { getApiErrorMessage } from "@/lib/api-client";
 import { login } from "../api/login";
-import register, { registerDto } from "../api/register";
+import registerApi, { registerDto } from "../api/register";
 import { toast } from "sonner";
 
 interface AuthState {
@@ -53,24 +54,20 @@ export const useAuthStore = create<AuthState>()(
     register: async (data) => {
       set({ isLoading: true, error: null });
       try {
-        // Ваша логика входа
-        const response = await register(data);
+        const response = await registerApi(data);
 
-        console.log('Res', response)
-        
         set({
           user: response.user,
           company: response.company,
           isLoading: false,
         });
         toast.success("Вы успешно прошли регистрацию");
-        setTimeout(()=> redirect('/login'), 3000)
+        setTimeout(() => redirect("/login"), 1500);
+        return response;
       } catch (error) {
-        set({ 
-          isLoading: false, 
-          error: error instanceof Error ? error.message : "Ошибка регистрации" 
-        });
-        toast.error("Ошибка при регистрации");
+        const message = getApiErrorMessage(error, "Ошибка регистрации");
+        set({ isLoading: false, error: message });
+        toast.error(message);
       }
     },
 
@@ -93,9 +90,9 @@ export const useAuthStore = create<AuthState>()(
         document.cookie = `accessToken=${data.accessToken}`;
         redirect("/dashboard");
       } catch (error) {
-        set({ 
-          isLoading: false, 
-          error: error instanceof Error ? error.message : "Ошибка входа" 
+        set({
+          isLoading: false,
+          error: getApiErrorMessage(error, "Ошибка входа"),
         });
       }
     },
