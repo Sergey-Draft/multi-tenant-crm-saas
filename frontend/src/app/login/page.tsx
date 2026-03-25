@@ -8,6 +8,7 @@ import { Smile, Mail, Lock, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { GlobalLoader } from "@/components/globalLoader/global-loader";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("draft@krot.com");
@@ -66,7 +67,6 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" variant="default" className="w-full !text-base !h-10" disabled={isLoading} >
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             Войти
           </Button>
         </form>
@@ -77,7 +77,7 @@ export default function LoginPage() {
             <Link href={"/register"}>Зарегистрироваться</Link>
             </Button>
           </div>
-
+          {isLoading ? <GlobalLoader isLoading={isLoading} /> : null}
       </div>
     </div>
   );

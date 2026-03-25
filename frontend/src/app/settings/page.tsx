@@ -24,8 +24,7 @@ import {
   Check,
   Copy,
 } from "lucide-react";
-
-const API_BASE = "http://localhost:3001";
+import { env } from "../../../env";
 
 // ─── JWT decode (no library needed — payload is plain base64) ─────────────────
 
@@ -260,7 +259,7 @@ function ApiHealthCard() {
         : null;
     const t0 = performance.now();
     try {
-      const res = await fetch(`${API_BASE}/auth/me`, {
+      const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/me`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       const ms = Math.round(performance.now() - t0);
@@ -353,7 +352,7 @@ function ApiHealthCard() {
             {labelText[status]}
           </p>
           <p className="text-sm text-muted-foreground font-mono mt-0.5">
-            {API_BASE}
+            {env.NEXT_PUBLIC_API_URL}
           </p>
         </div>
         <div className="text-right shrink-0">
@@ -469,7 +468,7 @@ export default function SettingsOverviewPage() {
               <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">
                 API Base
               </p>
-              <code className="text-sm font-mono">{API_BASE}</code>
+              <code className="text-sm font-mono">{env.NEXT_PUBLIC_API_URL}</code>
             </div>
             <div>
               <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">

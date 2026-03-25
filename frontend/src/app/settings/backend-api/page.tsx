@@ -13,6 +13,7 @@ import {
   Globe, Code2, Copy, Check, Lock, Unlock,
   ChevronDown, ChevronRight, Send, Loader2, ShieldCheck,
 } from "lucide-react"
+import { env } from "../../../../env"
 
 // ─── API Endpoints Definition ─────────────────────────────────────────────────
 
@@ -29,7 +30,6 @@ interface ApiGroup {
   endpoints: ApiEndpoint[]
 }
 
-const API_BASE = "http://localhost:3001"
 
 const API_GROUPS: ApiGroup[] = [
   {
@@ -150,7 +150,7 @@ const STATUS_STYLE = (s: number) =>
 
 function EndpointRow({ endpoint }: { endpoint: ApiEndpoint }) {
   const [isOpen,     setIsOpen]     = useState(false)
-  const [url,        setUrl]        = useState(`${API_BASE}${endpoint.path}`)
+  const [url,        setUrl]        = useState(`${env.NEXT_PUBLIC_API_URL}${endpoint.path}`)
   const [body,       setBody]       = useState(endpoint.bodyExample ?? "")
   const [response,   setResponse]   = useState<string | null>(null)
   const [httpStatus, setHttpStatus] = useState<number | null>(null)
@@ -298,7 +298,7 @@ export default function BackendApiPage() {
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <a
-                  href="http://localhost:3001/api"
+                  href={`${env.NEXT_PUBLIC_API_URL}/api/api`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors group"
@@ -307,13 +307,13 @@ export default function BackendApiPage() {
                     <Globe className="h-5 w-5 text-primary" />
                     <div>
                       <p className="text-sm font-semibold">Swagger UI</p>
-                      <p className="text-xs text-muted-foreground font-mono">http://localhost:3001/api</p>
+                      <p className="text-xs text-muted-foreground font-mono">{env.NEXT_PUBLIC_API_URL}/api</p>
                     </div>
                   </div>
                   <Badge className="text-xs">Открыть ↗</Badge>
                 </a>
                 <a
-                  href="http://localhost:3001/api/json"
+                  href={`${env.NEXT_PUBLIC_API_URL}/api/api/json`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors"
@@ -322,7 +322,7 @@ export default function BackendApiPage() {
                     <Code2 className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-semibold">OpenAPI JSON</p>
-                      <p className="text-xs text-muted-foreground font-mono">http://localhost:3001/api/json</p>
+                      <p className="text-xs text-muted-foreground font-mono">{env.NEXT_PUBLIC_API_URL}/api/json</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-xs">JSON ↗</Badge>
