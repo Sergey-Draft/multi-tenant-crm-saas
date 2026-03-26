@@ -3,8 +3,10 @@
 import {
   ColumnDef,
   OnChangeFn,
+  PaginationState,
   RowSelectionState,
   SortingState,
+  Updater,
   VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -14,7 +16,13 @@ import {
   useReactTable,
   Table as ReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -25,6 +33,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const DEFAULT_PAGE_SIZES = [10, 25, 50] as const;
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,6 +66,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: DEFAULT_PAGE_SIZES[0],
+  });
   const [internalRowSelection, setInternalRowSelection] =
     useState<RowSelectionState>({});
 
@@ -56,13 +77,31 @@ export function DataTable<TData, TValue>({
   const onRowSelectionChange =
     externalOnRowSelectionChange ?? setInternalRowSelection;
 
+  const onPaginationChange = (updater: Updater<PaginationState>) => {
+    setPagination((prev) =>
+      typeof updater === "function" ? updater(prev) : updater
+    );
+  };
+
+  const rowCount = data.length;
+  const totalPages =
+    rowCount === 0 ? 0 : Math.ceil(rowCount / pagination.pageSize);
+
+  useLayoutEffect(() => {
+    if (totalPages === 0) return;
+    setPagination((p) =>
+      p.pageIndex >= totalPages ? { ...p, pageIndex: totalPages - 1 } : p
+    );
+  }, [totalPages]);
+
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnVisibility, rowSelection },
+    state: { sorting, columnVisibility, rowSelection, pagination },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange,
+    onPaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -74,9 +113,13 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {toolbar?.(table)}
+      {toolbar && (
+        <div className="rounded-lg border border-border bg-muted/80 p-3 shadow-sm dark:bg-muted/50">
+          {toolbar(table)}
+        </div>
+      )}
 
-      <div className="border rounded-lg">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-card/95">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -160,29 +203,89 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/80 px-3 py-2.5 shadow-sm dark:bg-muted/50">
+        <div className="text-sm text-foreground">
           {selectedCount > 0 && <span>{selectedCount} выбрано · </span>}
           {table.getFilteredRowModel().rows.length} записей
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Назад
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Вперёд
-          </Button>
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              На странице
+            </span>
+            <Select
+              value={String(pagination.pageSize)}
+              onValueChange={(v) => table.setPageSize(Number(v))}
+            >
+              <SelectTrigger size="sm" className="w-[4.5rem]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                {DEFAULT_PAGE_SIZES.map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1">
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon-sm"
+              className="shrink-0"
+              aria-label="Первая страница"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronsLeft className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon-sm"
+              className="shrink-0"
+              aria-label="Предыдущая страница"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="min-w-[9rem] px-1 text-center text-sm tabular-nums text-foreground">
+              {totalPages === 0 ? (
+                <span className="text-muted-foreground">—</span>
+              ) : (
+                <>
+                  Страница {pagination.pageIndex + 1} из {totalPages}
+                </>
+              )}
+            </span>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon-sm"
+              className="shrink-0"
+              aria-label="Следующая страница"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon-sm"
+              className="shrink-0"
+              aria-label="Последняя страница"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronsRight className="size-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

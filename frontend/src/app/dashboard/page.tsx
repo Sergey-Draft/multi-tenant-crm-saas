@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Users, TrendingUp, CheckCircle, ClipboardList } from "lucide-react";
+import { TitleSEO } from "@/components/titleSEO/title-SEO";
 
 const LEAD_STATUS_VARIANT: Record<
   string,
@@ -68,7 +69,11 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Дашборд</h1>
+      <TitleSEO
+        title="Дашборд"
+        description="Главная панель управления с ключевыми метриками и KPI."
+        canonical="/dashboard"
+      />
 
       {/* KPI-карточки — 4 в ряд */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -100,7 +105,6 @@ export default function DashboardPage() {
 
       {/* График + последние лиды — рядом */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
         {/* Лиды по статусам — Bar chart */}
         {/* ResponsiveContainer растягивает chart на всю ширину родителя */}
         <Card>
@@ -132,7 +136,12 @@ export default function DashboardPage() {
                   />
                   <Tooltip />
                   {/* Bar — сами столбики, dataKey="count" берёт число из объекта */}
-                  <Bar dataKey="count" fill="#2563eb" radius={[4, 4, 0, 0]} name="Лидов" />
+                  <Bar
+                    dataKey="count"
+                    fill="#2563eb"
+                    radius={[4, 4, 0, 0]}
+                    name="Лидов"
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}

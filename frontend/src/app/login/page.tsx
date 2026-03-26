@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Smile, Mail, Lock, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GlobalLoader } from "@/components/globalLoader/global-loader";
 
@@ -17,10 +16,9 @@ export default function LoginPage() {
   const { login, isLoading, error, clearError } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearError(); 
-    await login({ email, password });
-    redirect("/dashboard");
+      e.preventDefault();
+      clearError(); 
+      await login({ email, password });
   };
 
   return (
