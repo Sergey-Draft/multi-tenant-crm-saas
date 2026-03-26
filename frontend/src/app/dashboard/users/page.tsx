@@ -1,12 +1,15 @@
-import CreateUser from "@/features/users/components/create-user";
-import UsersList from "@/features/users/components/users-list";
+import { TitleSEO } from "@/components/titleSEO/title-SEO";
+import { UsersTable } from "@/features/users/components/users-table";
 
 export default function UsersPage() {
   return (
-    <div className="flex jc-center gap-8">
-      <div>Users page</div>
-      <UsersList />
-      <CreateUser />
+    <div className="space-y-6">
+      <TitleSEO
+        title="Пользователи"
+        description="Управление пользователями тенанта. Роли: сотрудник, менеджер, администратор, супер-админ, владелец. Создавайте, редактируйте и управляйте доступом к системе."
+        canonical="/users"
+      />
+      <UsersTable />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,12 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { useAuditLogs } from "../hooks/use-audit-logs";
 import type { AuditEntityType, AuditAction } from "../api/get-audit-logs";
 import { useUserOptions } from "@/features/users/hooks/use-user-options";
@@ -50,13 +56,12 @@ export function AuditLogsTable() {
 
   const { options: userOptions } = useUserOptions();
 
-  const getUserName = (userId: string | null | undefined) => {
-    const userMapLabel = toLabelMap(userOptions);
-    if (!userId) return "Не найден";
-    return userMapLabel[userId];
-  };
+  const userMapLabel = toLabelMap(userOptions);
 
-  console.log("data", data);
+  const getUserName = (userId: string | null | undefined) => {
+    if (!userId) return "—";
+    return userMapLabel[userId] ?? "—";
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleString("ru-RU", {
@@ -68,65 +73,85 @@ export function AuditLogsTable() {
     });
   };
 
+  const totalPages = data?.totalPages ?? 0;
+  const canPrev = data != null && page > 1;
+  const canNext = data != null && totalPages > 0 && page < totalPages;
+
   return (
     <div className="space-y-4">
-<div>
-        <p className="text-base text-muted-foreground mt-0.5">Журналы событий. Используется для отслеживания изменений в системе.</p>
-      </div>
-      <div className="flex flex-wrap gap-3">
-        <Select
-          value={entityType}
-          onValueChange={(v) => {
-            if(v === 'all') {
-              setEntityType("");
+      <div className="rounded-lg border border-border bg-muted/80 p-3 shadow-sm dark:bg-muted/50">
+        <div className="flex flex-wrap gap-3">
+          <Select
+            value={entityType || "all"}
+            onValueChange={(v) => {
+              if (v === "all") {
+                setEntityType("");
+                setPage(1);
+                return;
+              }
+              setEntityType(v as AuditEntityType);
               setPage(1);
-              return
-            }
-            setEntityType(v as AuditEntityType | "");
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Тип сущности" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Все</SelectItem>
-            <SelectItem value="Lead">Лид</SelectItem>
-            <SelectItem value="Client">Клиент</SelectItem>
-            <SelectItem value="Task">Задача</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          value={action}
-          onValueChange={(v) => {
-            if(v === 'all') {
-              setAction("");
+            }}
+          >
+            <SelectTrigger size="sm" className="w-[160px]">
+              <SelectValue placeholder="Тип сущности" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="all">Все типы</SelectItem>
+              <SelectItem value="Lead">Лид</SelectItem>
+              <SelectItem value="Client">Клиент</SelectItem>
+              <SelectItem value="Task">Задача</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={action || "all"}
+            onValueChange={(v) => {
+              if (v === "all") {
+                setAction("");
+                setPage(1);
+                return;
+              }
+              setAction(v as AuditAction);
               setPage(1);
-              return
-            }
-            setAction(v as AuditAction | "");
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Действие" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Все</SelectItem>
-            <SelectItem value="CREATE">Создание</SelectItem>
-            <SelectItem value="UPDATE">Изменение</SelectItem>
-            <SelectItem value="DELETE">Удаление</SelectItem>
-          </SelectContent>
-        </Select>
+            }}
+          >
+            <SelectTrigger size="sm" className="w-[160px]">
+              <SelectValue placeholder="Действие" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="all">Все действия</SelectItem>
+              <SelectItem value="CREATE">Создание</SelectItem>
+              <SelectItem value="UPDATE">Изменение</SelectItem>
+              <SelectItem value="DELETE">Удаление</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div className="rounded-lg border">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-card/95">
         {isLoading ? (
-          <div className="p-4 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Дата</TableHead>
+                <TableHead>Сущность</TableHead>
+                <TableHead>Действие</TableHead>
+                <TableHead>ID сущности</TableHead>
+                <TableHead>Пользователь</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         ) : (
           <Table>
             <TableHeader>
@@ -143,7 +168,7 @@ export function AuditLogsTable() {
                 <TableRow>
                   <TableCell
                     colSpan={5}
-                    className="text-center text-muted-foreground py-8"
+                    className="h-24 text-center text-muted-foreground"
                   >
                     Нет записей
                   </TableCell>
@@ -165,8 +190,8 @@ export function AuditLogsTable() {
                           log.action === "DELETE"
                             ? "destructive"
                             : log.action === "CREATE"
-                            ? "default"
-                            : "outline"
+                              ? "default"
+                              : "outline"
                         }
                       >
                         {ACTION_LABELS[log.action] ?? log.action}
@@ -176,10 +201,7 @@ export function AuditLogsTable() {
                       {log.entityId.slice(0, 8)}…
                     </TableCell>
                     <TableCell className="text-sm">
-                      {log.userId ? log.userId.slice(0, 8) + "…" : "—"}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      { getUserName(log.userId)}
+                      {getUserName(log.userId)}
                     </TableCell>
                   </TableRow>
                 ))
@@ -189,29 +211,66 @@ export function AuditLogsTable() {
         )}
       </div>
 
-      {data && data.totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Страница {data.page} из {data.totalPages} ({data.total} записей)
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-            >
-              Назад
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
-              disabled={page >= data.totalPages}
-            >
-              Вперёд
-            </Button>
+      {data != null && !isLoading && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/80 px-3 py-2.5 shadow-sm dark:bg-muted/50">
+          <div className="text-sm text-foreground">
+            {data.total} записей
+            {totalPages > 1 && (
+              <span className="tabular-nums">
+                {" "}
+                · Страница {data.page} из {totalPages}
+              </span>
+            )}
           </div>
+
+          {totalPages > 1 && (
+            <div className="flex flex-wrap items-center gap-1">
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-sm"
+                className="shrink-0"
+                aria-label="Первая страница"
+                onClick={() => setPage(1)}
+                disabled={!canPrev}
+              >
+                <ChevronsLeft className="size-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-sm"
+                className="shrink-0"
+                aria-label="Предыдущая страница"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={!canPrev}
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-sm"
+                className="shrink-0"
+                aria-label="Следующая страница"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={!canNext}
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-sm"
+                className="shrink-0"
+                aria-label="Последняя страница"
+                onClick={() => setPage(totalPages)}
+                disabled={!canNext}
+              >
+                <ChevronsRight className="size-4" />
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,13 +1,16 @@
-import { FileText, ExternalLink } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { DOCS_PAGE_URL } from "@/lib/docs-url"
+import { FileText, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DOCS_PAGE_URL } from "@/lib/docs-url";
+import { TitleSEO } from "@/components/titleSEO/title-SEO";
 
 export default function DocumentationPage() {
   return (
-    <div className="max-w-xl space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Полная документация проекта — в репозитории на GitHub.
-      </p>
+    <div className="max-w-xl space-y-6">
+      <TitleSEO
+        title="Клиенты"
+        description="Полная документация проекта — в репозитории на GitHub."
+        canonical="/documentation"
+      />
       <Button asChild>
         <a
           href={DOCS_PAGE_URL}
@@ -21,5 +24,5 @@ export default function DocumentationPage() {
         </a>
       </Button>
     </div>
-  )
+  );
 }
