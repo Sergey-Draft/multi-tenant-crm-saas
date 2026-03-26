@@ -46,7 +46,7 @@ export const useAuthStore = create<AuthState>()(
       });
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      redirect("/login");
+      redirect("/");
     },
 
     clearError: () => set({ error: null }),
@@ -88,12 +88,13 @@ export const useAuthStore = create<AuthState>()(
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
         document.cookie = `accessToken=${data.accessToken}`;
-        redirect("/dashboard");
+        setTimeout(() => redirect("/dashboard"), 300);
       } catch (error) {
         set({
           isLoading: false,
           error: getApiErrorMessage(error, "Ошибка входа"),
         });
+        toast.error(getApiErrorMessage(error, "Ошибка входа"),);
       }
     },
   }))

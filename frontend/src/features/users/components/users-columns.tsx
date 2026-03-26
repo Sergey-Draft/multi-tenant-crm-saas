@@ -3,17 +3,25 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { TableSelectCheckbox } from "@/components/ui/table-select-checkbox";
 import { Button } from "@/components/ui/button";
+import type { User } from "@/types/user";
+import { toLabelMap, USER_ROLE_OPTIONS } from "@/lib/options";
 
-export type Client = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-};
+const ROLE_LABELS = toLabelMap(USER_ROLE_OPTIONS);
 
-export function createClientColumns(
-  onDetails: (client: Client) => void
-): ColumnDef<Client>[] {
+function formatCreatedAt(iso: string) {
+  try {
+    return new Date(iso).toLocaleString("ru", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+export function createUserColumns(
+  onDetails: (user: User) => void
+): ColumnDef<User>[] {
   return [
     {
       id: "select",
@@ -40,14 +48,22 @@ export function createClientColumns(
     {
       accessorKey: "name",
       header: "Имя",
+      cell: ({ row }) => row.original.name || "—",
     },
     {
       accessorKey: "email",
       header: "Email",
     },
     {
-      accessorKey: "phone",
-      header: "Телефон",
+      accessorKey: "role",
+      header: "Роль",
+      cell: ({ row }) =>
+        ROLE_LABELS[row.original.role] ?? row.original.role,
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Создан",
+      cell: ({ row }) => formatCreatedAt(row.original.createdAt),
     },
     {
       id: "details",

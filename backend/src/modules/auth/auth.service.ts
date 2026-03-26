@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -14,7 +16,7 @@ import { UserRole } from '@prisma/client';
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService,
+    private jwt: JwtService
   ) {}
 
   async register(dto: RegisterDto) {
@@ -65,13 +67,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new NotFoundException('User not found');
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.password);
 
     if (!isMatch) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new BadRequestException('Invalid password');
     }
 
     const payload = {
@@ -97,7 +99,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         companyId: user.companyId,
-        name: user.name
+        name: user.name,
       },
     };
   }
@@ -127,7 +129,7 @@ export class AuthService {
           email: payload.email,
           role: payload.role,
         },
-        { expiresIn: '15m' },
+        { expiresIn: '15m' }
       );
 
       return {
