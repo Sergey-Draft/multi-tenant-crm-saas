@@ -1,11 +1,10 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { LandingHeroPreview } from "@/components/landing/landing-hero-preview";
 import { 
   ArrowRight, 
   CheckCircle, 
   LayoutDashboard, 
-  Users, 
-  KanbanSquare, 
-  Clock, 
   Shield, 
   Zap, 
   GitBranch,
@@ -13,14 +12,18 @@ import {
   Server,
   Cloud,
   Eye,
-  Settings,
   BarChart3,
   UserCog,
   FolderKanban,
   Building2
 } from "lucide-react";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const cookieStore = await cookies();
+  const hasAccessToken = Boolean(cookieStore.get("accessToken")?.value);
+  const primaryHref = hasAccessToken ? "/dashboard" : "/register";
+  const primaryLabel = hasAccessToken ? "Перейти в дашборд" : "Зарегистрироваться";
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* HERO секция с градиентом */}
@@ -48,22 +51,22 @@ export default function HomePage() {
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
-                href="/register"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all hover:scale-105 shadow-lg shadow-primary/20"
+                href={primaryHref}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
               >
-                Начать бесплатно
+                {primaryLabel}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all duration-200 active:scale-[0.98]"
               >
                 Войти
               </Link>
               <a
-                href="https://github.com"
+                href="https://github.com/Sergey-Draft/multi-tenant-crm-saas"
                 target="_blank"
-                className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all duration-200 active:scale-[0.98]"
               >
                 <GitBranch className="h-4 w-4" />
                 GitHub
@@ -91,27 +94,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Dashboard Preview с анимацией */}
-          <div className="mt-16 relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl blur-xl opacity-50" />
-            <div className="relative border border-border rounded-2xl bg-card shadow-2xl overflow-hidden">
-              <div className="bg-secondary/50 px-4 py-3 border-b border-border flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500/70" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/70" />
-                </div>
-                <span className="text-xs text-muted-foreground ml-2">dashboard.draft-crm.com</span>
-              </div>
-              <div className="bg-background/50 p-6 h-[320px] flex items-center justify-center">
-                <div className="text-center">
-                  <LayoutDashboard className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-muted-foreground">Интерактивный дашборд с KPI и аналитикой</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">Канбан доска • Управление лидами • Real-time уведомления</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <LandingHeroPreview />
         </div>
       </section>
 
@@ -314,15 +297,15 @@ export default function HomePage() {
             </div>
             <div className="flex gap-3">
               <Link
-                href="/register"
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all"
+                href={primaryHref}
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 active:scale-[0.98]"
               >
-                Начать
+                {hasAccessToken ? "В дашборд" : "Зарегистрироваться"}
               </Link>
               <a
-                href="https://github.com"
+                href="https://github.com/Sergey-Draft/multi-tenant-crm-saas"
                 target="_blank"
-                className="px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all"
+                className="px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all duration-200 active:scale-[0.98]"
               >
                 Документация
               </a>
@@ -343,14 +326,14 @@ export default function HomePage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
-              href="/register"
-              className="px-8 py-3 bg-white text-primary rounded-lg font-medium hover:bg-white/90 transition-all shadow-lg"
+              href={primaryHref}
+              className="px-8 py-3 bg-white text-primary rounded-lg font-medium hover:bg-white/90 transition-all duration-200 active:scale-[0.98] shadow-lg"
             >
-              Начать бесплатно
+              {primaryLabel}
             </Link>
             <Link
               href="/login"
-              className="px-8 py-3 border border-white/30 rounded-lg hover:bg-white/10 transition-all"
+              className="px-8 py-3 border border-white/30 rounded-lg hover:bg-white/10 transition-all duration-200 active:scale-[0.98]"
             >
               Войти
             </Link>
@@ -358,6 +341,28 @@ export default function HomePage() {
           <p className="mt-6 text-primary-foreground/60 text-sm">
             Не требуется кредитная карта • Бесплатный пробный период
           </p>
+        </div>
+      </section>
+
+      {/* ABOUT PROJECT */}
+      <section className="px-6 py-16 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-card border border-border rounded-xl p-6">
+            <h3 className="text-xl font-semibold">О проекте</h3>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              Draft CRM создавался как production-ready fullstack SaaS: с multi-tenant
+              архитектурой, ролями, аудитом, real-time и удобным UI для ежедневной
+              работы команды.
+            </p>
+          </div>
+          <div className="bg-card border border-border rounded-xl p-6">
+            <h3 className="text-xl font-semibold">О разработчике</h3>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              Проект демонстрирует мой подход к разработке: чистая модульная
+              архитектура, типобезопасность, внимание к UX и готовность системы к
+              масштабированию и деплою.
+            </p>
+          </div>
         </div>
       </section>
     </main>

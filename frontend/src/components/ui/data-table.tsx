@@ -114,7 +114,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {toolbar && (
-        <div className="rounded-lg border border-border bg-muted/80 p-3 shadow-sm dark:bg-muted/50">
+        <div >
           {toolbar(table)}
         </div>
       )}
@@ -203,7 +203,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/80 px-3 py-2.5 shadow-sm dark:bg-muted/50">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-white px-3 py-2.5 shadow-sm dark:bg-muted/50">
         <div className="text-sm text-foreground">
           {selectedCount > 0 && <span>{selectedCount} выбрано · </span>}
           {table.getFilteredRowModel().rows.length} записей

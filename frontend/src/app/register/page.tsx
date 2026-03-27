@@ -7,13 +7,12 @@ import { Label } from "@/components/ui/label";
 import {
   Mail,
   Lock,
-  Loader2,
   Building2,
   User,
   Smile
 } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { USER_ROLE_OPTIONS } from "@/lib/options";
 import { UserRole } from "@/types/user";
 import {
@@ -24,7 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { GlobalLoader } from "@/components/globalLoader/global-loader";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -32,6 +30,7 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [companyName, setCompany] = useState("");
   const [role, setRole] = useState("");
+  const router = useRouter();
 
   const { register, isLoading, error, clearError } = useAuthStore();
 
@@ -46,7 +45,8 @@ export default function LoginPage() {
 
     e.preventDefault();
     clearError();
-    const response = await register(data);
+    const ok = await register(data);
+    if (ok) router.replace("/login");
   };
 
   return (
@@ -159,6 +159,12 @@ export default function LoginPage() {
             Зарегистрироваться
           </Button>
         </form>
+        <div
+          aria-live="polite"
+          className={`mt-2 min-h-5 text-sm text-destructive ${error ? "opacity-100" : "opacity-0"}`}
+        >
+          {error ?? " "}
+        </div>
 
         <div className="flex justify-center items-center gap-1 mt-2">
             <div>Уже есть аккаунт?</div>
@@ -166,7 +172,6 @@ export default function LoginPage() {
             <Link href={"/login"}>Войти</Link>
             </Button>
           </div>
-          {isLoading ? <GlobalLoader isLoading={isLoading} /> : null}
       </div>
     </div>
   );

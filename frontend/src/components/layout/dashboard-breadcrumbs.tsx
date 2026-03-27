@@ -15,6 +15,7 @@ const DASHBOARD_NESTED_TITLES: Record<string, string> = {
   "/dashboard/clients": "Клиенты",
   "/dashboard/users": "Пользователи",
   "/dashboard/leads": "Лиды",
+  "/dashboard/tasks": "Задачи",
   "/dashboard/audit-logs": "Журнал аудита",
 }
 
