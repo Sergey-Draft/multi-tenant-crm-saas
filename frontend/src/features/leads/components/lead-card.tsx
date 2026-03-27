@@ -41,9 +41,10 @@ function isOverdue(dateStr: string) {
 interface LeadCardProps {
   lead: any;
   onOpen?: (lead: any) => void;
+  highlighted?: boolean;
 }
 
-const LeadCard = ({ lead, onOpen }: LeadCardProps) => {
+const LeadCard = ({ lead, onOpen, highlighted = false }: LeadCardProps) => {
   const borderColor =
     statusBorderColors[lead?.status as keyof typeof statusBorderColors] ?? "";
 
@@ -66,6 +67,7 @@ const LeadCard = ({ lead, onOpen }: LeadCardProps) => {
         h-[240px] min-w-0 overflow-hidden
         transition-all duration-200
         cursor-pointer hover:-translate-y-0.5 hover:shadow-md
+        ${highlighted ? "ring-2 ring-primary/60 shadow-md" : ""}
         ${borderColor}
       `}
     >

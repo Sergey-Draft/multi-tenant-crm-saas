@@ -4,21 +4,23 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Smile, Mail, Lock, Loader2 } from "lucide-react";
+import { Smile, Mail, Lock } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import Link from "next/link";
-import { GlobalLoader } from "@/components/globalLoader/global-loader";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("draft@krot.com");
   const [password, setPassword] = useState("123456");
+  const router = useRouter();
 
   const { login, isLoading, error, clearError } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       clearError(); 
-      await login({ email, password });
+      const ok = await login({ email, password });
+      if (ok) router.replace("/dashboard");
   };
 
   return (
@@ -68,6 +70,12 @@ export default function LoginPage() {
             Войти
           </Button>
         </form>
+        <div
+          aria-live="polite"
+          className={`mt-2 min-h-5 text-sm text-destructive ${error ? "opacity-100" : "opacity-0"}`}
+        >
+          {error ?? " "}
+        </div>
 
         <div className="flex justify-center items-center gap-1 mt-2">
             <div>Еще нет аккаунта?</div>
@@ -75,7 +83,6 @@ export default function LoginPage() {
             <Link href={"/register"}>Зарегистрироваться</Link>
             </Button>
           </div>
-          {isLoading ? <GlobalLoader isLoading={isLoading} /> : null}
       </div>
     </div>
   );

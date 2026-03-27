@@ -44,6 +44,7 @@ const NAV_SECTIONS: NavSection[] = [
       { title: "Клиенты", url: "/dashboard/clients", icon: Users },
       { title: "Пользователи", url: "/dashboard/users", icon: Users },
       { title: "Лиды", url: "/dashboard/leads", icon: ClipboardList },
+      { title: "Задачи", url: "/dashboard/tasks", icon: ListChecks },
       { title: "Журнал аудита", url: "/dashboard/audit-logs", icon: ScrollText },
     ],
   },

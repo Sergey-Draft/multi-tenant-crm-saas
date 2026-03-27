@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../app/globals.css";
 import useGetLeads from "../hooks/use-get-leads";
 import LeadCard from "./lead-card";
@@ -8,13 +8,19 @@ import useChangeLeadSytatus from "../hooks/use-change-lead-status";
 import { LeadDetailModal } from "./lead-detail-modal";
 import SimpleDialog from "@/components/confirmationModal/simple-modal";
 import { LEAD_STATUS_VALUES } from "@/lib/options";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // type LeadStatus = "NEW" | "IN_PROGRESS" | "DONE" | "REJECTED";
 
 type LeadStatus = keyof typeof LEAD_STATUS_VALUES
 
 const LeadsKanban = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const leadIdFromQuery = searchParams.get("leadId");
   const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [highlightedLeadId, setHighlightedLeadId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<{
     id: string;
@@ -23,6 +29,19 @@ const LeadsKanban = () => {
 
   const { data, isLoading } = useGetLeads();
   const mutation = useChangeLeadSytatus();
+
+  useEffect(() => {
+    if (!leadIdFromQuery || !data?.length) return;
+    const target = data.find((lead: any) => lead.id === leadIdFromQuery);
+    if (!target) return;
+
+    setSelectedLead(target);
+    setHighlightedLeadId(target.id);
+    router.replace(pathname);
+
+    const timer = window.setTimeout(() => setHighlightedLeadId(null), 3000);
+    return () => window.clearTimeout(timer);
+  }, [leadIdFromQuery, data, pathname, router]);
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData("id", id);
@@ -94,7 +113,11 @@ const LeadsKanban = () => {
                   draggable
                   onDragStart={(e) => handleDragStart(e, data?.id)}
                 >
-                  <LeadCard lead={data} onOpen={setSelectedLead} />
+                  <LeadCard
+                    lead={data}
+                    onOpen={setSelectedLead}
+                    highlighted={highlightedLeadId === data.id}
+                  />
                 </div>
               ))}
           </div>
