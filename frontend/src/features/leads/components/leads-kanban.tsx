@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -9,8 +10,6 @@ import { LeadDetailModal } from "./lead-detail-modal";
 import SimpleDialog from "@/components/confirmationModal/simple-modal";
 import { LEAD_STATUS_VALUES } from "@/lib/options";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-// type LeadStatus = "NEW" | "IN_PROGRESS" | "DONE" | "REJECTED";
 
 type LeadStatus = keyof typeof LEAD_STATUS_VALUES
 
