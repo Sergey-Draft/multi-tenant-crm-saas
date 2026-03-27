@@ -79,7 +79,7 @@ export function AuditLogsTable() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-border bg-muted/80 p-3 shadow-sm dark:bg-muted/50">
+      <div>
         <div className="flex flex-wrap gap-3">
           <Select
             value={entityType || "all"}
@@ -212,7 +212,7 @@ export function AuditLogsTable() {
       </div>
 
       {data != null && !isLoading && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/80 px-3 py-2.5 shadow-sm dark:bg-muted/50">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-white px-3 py-2.5 shadow-sm dark:bg-muted/50">
           <div className="text-sm text-foreground">
             {data.total} записей
             {totalPages > 1 && (
