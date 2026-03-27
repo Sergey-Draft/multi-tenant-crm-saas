@@ -5,16 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { Users, TrendingUp, CheckCircle, ClipboardList } from "lucide-react";
+  Users,
+  TrendingUp,
+  CheckCircle,
+  ClipboardList,
+} from "lucide-react";
 import { TitleSEO } from "@/components/titleSEO/title-SEO";
+import { Separator } from "@/components/ui/separator";
+import { useMemo } from "react";
 
 const LEAD_STATUS_VARIANT: Record<
   string,
@@ -33,39 +31,105 @@ const LEAD_STATUS_LABEL: Record<string, string> = {
   REJECTED: "Отклонён",
 };
 
+const cardGradients = {
+  clients: "gradient-to-br from-[#4099ff] to-[#97bfed]",
+  leadsWork: "gradient-to-br from-[#2ed8b6] to-[#6cedd3]",
+  leadsClose: "gradient-to-br from-[#FFB64D] to-[#efcd9c]",
+  tasks: "gradient-to-br from-[#8e44ad] to-[#c39bd3]",
+};
+
 // KPI-карточка: иконка + число + подпись
 function StatCard({
   title,
   value,
   icon: Icon,
   isLoading,
+  bg,
 }: {
   title: string;
   value: number | undefined;
   icon: React.ElementType;
   isLoading: boolean;
+  bg?: string;
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card
+      className={`bg-${bg} transition-all duration-300 ease-out hover:shadow-xl hover:translate-y-[-2px]`}
+    >
+      <CardHeader className="flex flex-row items-center justify-between h-[20%] text-center">
+        <CardTitle className="text-[18px] font-bold text-white ">
           {title}
         </CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
+      <Separator />
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-8 w-16" />
         ) : (
-          <p className="text-3xl font-bold">{value ?? 0}</p>
+          <div className="flex flex-row items-center justify-between">
+            <Icon className="h-8 w-8 text-muted-foreground" color="white" />
+            <p className="text-3xl font-bold text-white">{value ?? 0}</p>
+          </div>
         )}
       </CardContent>
     </Card>
   );
 }
 
+type LeadItem = {
+  label: string;
+  count: number;
+};
+
+const COLORS = [
+  ["#4099ff", "#97bfed"],
+  ["#2ed8b6", "#6cedd3"],
+  ["#FFB64D", "#efcd9c"], 
+  ["#8e44ad", "#c39bd3"],
+];
+
+export function LeadsProgress({ data }: { data?: LeadItem[] }) {
+  const total = useMemo(() => {
+    return data?.reduce((acc, item) => acc + item.count, 0) || 0;
+  }, [data]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {data?.map((item, index) => {
+        const percent = total ? (item.count / total) * 100 : 0;
+        const [from, to] = COLORS[index % COLORS.length];
+
+        return (
+          <div key={index} className="flex flex-col gap-1">
+            {/* Header */}
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">{item.label}</span>
+              <span className="font-medium">
+                {item.count} • {Math.round(percent)}%
+              </span>
+            </div>
+
+            {/* Progress bar */}
+            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-700 ease-out"
+                style={{
+                  width: `${percent}%`,
+                  background: `linear-gradient(135deg, ${from}, ${to})`,
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { data, isLoading } = useStats();
+
+  const COLORS = ["#4099ff", "#2ed8b6", "#FFB64D", "#8e44ad"];
 
   return (
     <div className="space-y-8">
@@ -82,21 +146,25 @@ export default function DashboardPage() {
           value={data?.clientsTotal}
           icon={Users}
           isLoading={isLoading}
+          bg={cardGradients.clients}
         />
         <StatCard
           title="Лидов в работе"
+          bg={cardGradients.leadsWork}
           value={data?.leadsInProgress}
           icon={TrendingUp}
           isLoading={isLoading}
         />
         <StatCard
           title="Закрыто за месяц"
+          bg={cardGradients.leadsClose}
           value={data?.leadsClosedThisMonth}
           icon={CheckCircle}
           isLoading={isLoading}
         />
         <StatCard
           title="Задач к выполнению"
+          bg={cardGradients.tasks}
           value={data?.tasksTodo}
           icon={ClipboardList}
           isLoading={isLoading}
@@ -105,8 +173,6 @@ export default function DashboardPage() {
 
       {/* График + последние лиды — рядом */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Лиды по статусам — Bar chart */}
-        {/* ResponsiveContainer растягивает chart на всю ширину родителя */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Лиды по статусам</CardTitle>
@@ -115,35 +181,7 @@ export default function DashboardPage() {
             {isLoading ? (
               <Skeleton className="h-48 w-full" />
             ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart
-                  data={data?.leadsByStatus}
-                  margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  {/* XAxis — ось X, dataKey указывает какое поле брать из data */}
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fontSize: 12 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    allowDecimals={false}
-                    tick={{ fontSize: 12 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip />
-                  {/* Bar — сами столбики, dataKey="count" берёт число из объекта */}
-                  <Bar
-                    dataKey="count"
-                    fill="#2563eb"
-                    radius={[4, 4, 0, 0]}
-                    name="Лидов"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+              <LeadsProgress data={data?.leadsByStatus} />
             )}
           </CardContent>
         </Card>
