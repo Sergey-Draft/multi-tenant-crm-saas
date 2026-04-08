@@ -146,7 +146,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center justify-start gap-4 mr-8">
             {isEditing ? (
               <Input
                 name="title"
@@ -179,16 +179,6 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
                 <Badge variant={LEAD_STATUS_VARIANT[lead.status]}>
                   {leadLabelMap[lead.status] ?? lead.status}
                 </Badge>
-              )}
-              {!isEditing && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <Pencil className="h-4 w-4 mr-1" />
-                  Редактировать
-                </Button>
               )}
             </div>
           </div>
@@ -357,7 +347,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
             </div>
           </div>
 
-          {isEditing && (
+          {isEditing ? (
             <DialogFooter className="mt-6">
               <Button
                 type="button"
@@ -368,6 +358,15 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
               </Button>
               <Button type="submit" disabled={mutation.isPending}>
                 Сохранить
+              </Button>
+            </DialogFooter>
+          ) : (
+            <DialogFooter>
+              <Button
+                onClick={() => setIsEditing(true)}
+              >
+                <Pencil className="h-4 w-4 mr-1" />
+                Редактировать
               </Button>
             </DialogFooter>
           )}

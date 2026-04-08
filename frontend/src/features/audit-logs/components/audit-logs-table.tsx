@@ -161,6 +161,7 @@ export function AuditLogsTable() {
                 <TableHead>Действие</TableHead>
                 <TableHead>ID сущности</TableHead>
                 <TableHead>Пользователь</TableHead>
+                <TableHead>Сущность</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -190,8 +191,8 @@ export function AuditLogsTable() {
                           log.action === "DELETE"
                             ? "destructive"
                             : log.action === "CREATE"
-                              ? "default"
-                              : "outline"
+                            ? "default"
+                            : "outline"
                         }
                       >
                         {ACTION_LABELS[log.action] ?? log.action}
@@ -202,6 +203,22 @@ export function AuditLogsTable() {
                     </TableCell>
                     <TableCell className="text-sm">
                       {getUserName(log.userId)}
+                    </TableCell>
+                    <TableCell className="w-[300px] min-w-[300px] max-w-[300px]">
+                      {
+                        <details className="text-xs">
+                          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                            Показать JSON
+                          </summary>
+                          <pre className="mt-2 p-2 bg-muted rounded overflow-auto max-h-40">
+                            {log.metadata ? (
+                              JSON.stringify(log.metadata, null, 2)
+                            ) : (
+                              <>--</>
+                            )}
+                          </pre>
+                        </details>
+                      }
                     </TableCell>
                   </TableRow>
                 ))

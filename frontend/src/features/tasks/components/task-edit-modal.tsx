@@ -71,7 +71,7 @@ export function TaskEditModal({ task, onClose }: TaskEditModalProps) {
           <DialogHeader>
             <DialogTitle>Редактировать задачу</DialogTitle>
           </DialogHeader>
-          <FieldGroup>
+          <FieldGroup className="py-4">
             <Field>
               <Label htmlFor="edit-task-title">Заголовок</Label>
               <Input

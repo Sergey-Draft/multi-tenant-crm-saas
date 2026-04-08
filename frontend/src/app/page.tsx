@@ -416,7 +416,8 @@ function TechCard({ title, icon, items }: { title: string; icon: React.ReactNode
         {items.map((item, i) => (
           <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
             <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
-            {item}
+            {title === 'Backend' &&
+            (i === 2 || i ===4) ? <><s>{item}</s><span className="text-red-300"> dev</span> </>: item }
           </li>
         ))}
       </ul>
