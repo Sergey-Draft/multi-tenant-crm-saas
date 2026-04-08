@@ -99,19 +99,17 @@ export default function CreateLeadDialog({ onSuccess }: CreateLeadDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {/* Кнопка-триггер */}
       <DialogTrigger asChild>
         <Button>Добавить Лид</Button>
       </DialogTrigger>
 
-      {/* Сам диалог */}
       <DialogContent className="sm:max-w-sm">
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
+          <DialogHeader >
             <DialogTitle>Добавить лид</DialogTitle>
           </DialogHeader>
 
-          <FieldGroup>
+          <FieldGroup className="py-4">
             <Field>
               <Label htmlFor="title">Название</Label>
               <Input
@@ -174,7 +172,7 @@ export default function CreateLeadDialog({ onSuccess }: CreateLeadDialogProps) {
             </Field>
 
             <Field>
-              <Label htmlFor="client">Клиент</Label>
+              <Label htmlFor="client">Статус</Label>
               <Select
                 value={newLead.status as LeadStatus}
                 onValueChange={(value) => handleClientSelectChange(value, 'status')}

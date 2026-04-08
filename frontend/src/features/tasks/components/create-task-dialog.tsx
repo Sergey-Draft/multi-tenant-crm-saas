@@ -67,7 +67,7 @@ export function CreateTaskDialog() {
           <DialogHeader>
             <DialogTitle>Новая задача</DialogTitle>
           </DialogHeader>
-          <FieldGroup>
+          <FieldGroup className="py-4">
             <Field>
               <Label htmlFor="task-title">Заголовок</Label>
               <Input

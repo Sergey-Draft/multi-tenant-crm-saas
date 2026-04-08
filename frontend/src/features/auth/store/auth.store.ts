@@ -93,7 +93,6 @@ export const useAuthStore = create<AuthState>()(
       set({ isLoading: true, error: null });
       
       try {
-        // Ваша логика входа
         const data = await login({ email, password });
         
         set({

@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getInitials } from "@/lib/utils";
 import {
   Calendar,
   Phone,
@@ -25,14 +26,7 @@ function formatDate(dateStr: string) {
   }).format(new Date(dateStr));
 }
 
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+
 
 function isOverdue(dateStr: string) {
   return new Date(dateStr) < new Date();
