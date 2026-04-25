@@ -184,10 +184,42 @@ const API_GROUPS: ApiGroup[] = [
       },
       {
         method: "PATCH",
-        path: "/leads/:id/status",
+        path: "/leads/status/:id",
         description: "Сменить статус",
         requiresAuth: true,
         bodyExample: JSON.stringify({ status: "IN_PROGRESS" }, null, 2),
+      },
+      {
+        method: "POST",
+        path: "/leads/:id/ai-analyze",
+        description:
+          "ИИ: полный разбор лида (summary/nextAction/email) + сохранение снимка в БД",
+        requiresAuth: true,
+      },
+      {
+        method: "POST",
+        path: "/leads/:id/ai-chat",
+        description:
+          "ИИ: чат по лиду (режимы CHAT/SUMMARY/NEXT_ACTION/DRAFT_EMAIL)",
+        requiresAuth: true,
+        bodyExample: JSON.stringify(
+          {
+            mode: "CHAT",
+            messages: [
+              { role: "user", content: "Кратко оцени этот лид" },
+              { role: "assistant", content: "..." },
+              { role: "user", content: "Что делать дальше?" },
+            ],
+          },
+          null,
+          2
+        ),
+      },
+      {
+        method: "GET",
+        path: "/leads/:id/ai-analysis/latest",
+        description: "ИИ: последний сохранённый полный разбор по лиду",
+        requiresAuth: true,
       },
       {
         method: "DELETE",

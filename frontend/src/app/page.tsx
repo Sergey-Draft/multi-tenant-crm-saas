@@ -15,7 +15,10 @@ import {
   BarChart3,
   UserCog,
   FolderKanban,
-  Building2
+  Building2,
+  Sparkles,
+  MessageCircle,
+  MailCheck
 } from "lucide-react";
 
 export default async function HomePage() {
@@ -138,6 +141,56 @@ export default async function HomePage() {
             title="Audit Log"
             desc="Полный журнал действий пользователей. Отслеживайте все изменения в системе."
           />
+        </div>
+      </section>
+
+      {/* AI ASSISTANT */}
+      <section className="px-6 py-20 bg-secondary/20 border-y border-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm mb-4">
+              <Sparkles className="h-3.5 w-3.5" />
+              AI для работы с лидами
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight">ИИ‑ассистент в карточке лида</h2>
+            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+              Помогает менеджеру быстрее разбирать лиды и сразу формировать следующий шаг.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <Feature
+              icon={<MessageCircle className="h-5 w-5" />}
+              title="Контекстный чат"
+              desc="Диалог по текущему лиду: ассистент учитывает клиента, описание, статус и задачи."
+            />
+            <Feature
+              icon={<CheckCircle className="h-5 w-5" />}
+              title="Следующий шаг"
+              desc="Подсказывает конкретное действие для менеджера и сокращает время на принятие решения."
+            />
+            <Feature
+              icon={<MailCheck className="h-5 w-5" />}
+              title="Черновик письма"
+              desc="Генерирует готовый human-like ответ клиенту, который можно быстро адаптировать."
+            />
+          </div>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link
+              href={hasAccessToken ? "/dashboard/leads" : "/register"}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 active:scale-[0.98]"
+            >
+              {hasAccessToken ? "Открыть лиды" : "Попробовать AI в CRM"}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href={hasAccessToken ? "/dashboard/settings/backend-api" : "/login"}
+              className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all duration-200 active:scale-[0.98]"
+            >
+              API ассистента
+            </Link>
+          </div>
         </div>
       </section>
 

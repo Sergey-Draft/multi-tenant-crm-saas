@@ -5,13 +5,16 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { LeadStatus } from '@prisma/client';
 import { addWeeks } from 'date-fns';
 import { ChangeLeadStatusDto } from './dto/change-status.dto';
+import { LeadAiChatDto } from './dto/lead-ai-chat.dto';
 import { AuditLogService } from '../audit-log/audit-log.service';
+import { LeadAiInsightService } from './lead-ai-insight.service';
 
 @Injectable()
 export class LeadsService {
   constructor(
     private prisma: PrismaService,
     private auditLog: AuditLogService,
+    private leadAiInsight: LeadAiInsightService,
   ) {}
 
   async create(dto: CreateLeadDto, companyId: string, userId?: string) {
@@ -191,5 +194,47 @@ export class LeadsService {
       where: { id },
       data: { status: dto.status as LeadStatus },
     });
+  }
+
+  analyzeWithAi(id: string, companyId: string, userId?: string) {
+    return this.leadAiInsight.analyzeAndPersist(id, companyId, userId);
+  }
+
+  chatWithAi(id: string, companyId: string, dto: LeadAiChatDto) {
+    return this.leadAiInsight.chat(id, companyId, dto);
+  }
+
+  async getLatestAiAnalysis(leadId: string, companyId: string) {
+    const lead = await this.prisma.lead.findFirst({
+      where: { id: leadId, companyId },
+      select: { id: true },
+    });
+    if (!lead) throw new NotFoundException('Lead not found');
+
+    const row = await this.prisma.leadAiAnalysis.findFirst({
+      where: { leadId, companyId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        summary: true,
+        nextAction: true,
+        email: true,
+        usedFallback: true,
+        createdAt: true,
+      },
+    });
+
+    if (!row) {
+      return { analysis: null };
+    }
+
+    return {
+      analysis: {
+        summary: row.summary,
+        nextAction: row.nextAction,
+        email: row.email,
+        usedFallback: row.usedFallback,
+        createdAt: row.createdAt.toISOString(),
+      },
+    };
   }
 }

@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+ 
 "use client";
 
 import { useEffect, useState } from "react";
@@ -26,7 +26,8 @@ import {
   LEAD_STATUS_OPTIONS,
   toLabelMap,
 } from "@/lib/options";
-import { Calendar, User, Phone, Mail, Pencil } from "lucide-react";
+import { Calendar, User, Phone, Mail, Pencil, Sparkles } from "lucide-react";
+import { LeadAiAssistantSheet } from "./lead-ai-assistant-sheet";
 import useUpdateLead from "../hooks/use-update-lead";
 import { useClientOptions } from "@/features/clients/hooks/use-client-options";
 import { useUserOptions } from "@/features/users/hooks/use-user-options";
@@ -70,6 +71,7 @@ interface LeadDetailModalProps {
 }
 
 export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -85,8 +87,6 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
   const mutation = useUpdateLead();
   const { options: clientOptions } = useClientOptions();
   const { options: userOptions } = useUserOptions();
-
-  console.log("userOption", userOptions);
 
   useEffect(() => {
     if (lead) {
@@ -143,6 +143,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
   if (!lead) return null;
 
   return (
+    <>
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
@@ -360,18 +361,33 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
                 Сохранить
               </Button>
             </DialogFooter>
-          ) : (
-            <DialogFooter>
-              <Button
-                onClick={() => setIsEditing(true)}
-              >
-                <Pencil className="h-4 w-4 mr-1" />
-                Редактировать
-              </Button>
-            </DialogFooter>
-          )}
+          ) : null}
         </form>
+
+        {!isEditing ? (
+          <DialogFooter className="mt-6 flex flex-wrap gap-2 sm:justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setAssistantOpen(true)}
+            >
+              <Sparkles className="h-4 w-4 mr-1" />
+              ИИ‑ассистент
+            </Button>
+            <Button type="button" onClick={() => setIsEditing(true)}>
+              <Pencil className="h-4 w-4 mr-1" />
+              Редактировать
+            </Button>
+          </DialogFooter>
+        ) : null}
       </DialogContent>
     </Dialog>
+    <LeadAiAssistantSheet
+      leadId={lead?.id ?? null}
+      leadTitle={lead?.title}
+      open={assistantOpen}
+      onOpenChange={setAssistantOpen}
+    />
+    </>
   );
 }
