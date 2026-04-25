@@ -361,7 +361,16 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
                 Сохранить
               </Button>
             </DialogFooter>
-          ) : null}
+          ) : (
+            <DialogFooter>
+              <Button
+                onClick={() => setIsEditing(true)}
+              >
+                <Pencil className="h-4 w-4 mr-1" />
+                Редактировать
+              </Button>
+            </DialogFooter>
+          )}
         </form>
 
         {!isEditing ? (
