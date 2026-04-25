@@ -10,6 +10,10 @@ import { UpdateLeadDto } from './dto/update-lead.dto';
 import { ChangeLeadStatusDto } from './dto/change-status.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { LeadAiInsightResponseDto } from './dto/lead-ai-insight-response.dto';
+import { LeadAiChatDto } from './dto/lead-ai-chat.dto';
+import { LeadAiChatResponseDto } from './dto/lead-ai-chat-response.dto';
+import { LeadAiAnalysisLatestResponseDto } from './dto/lead-ai-analysis-latest-response.dto';
 
 @ApiTags('leads')
 @ApiBearerAuth()
@@ -31,6 +35,38 @@ export class LeadsController {
   @Get()
   findAll(@CurrentUser() user) {
     return this.leadsService.findAll(user.companyId);
+  }
+
+  @ApiOperation({ summary: 'ИИ: анализ лида (Gemini), сохранение в историю' })
+  @ApiParam({ name: 'id', description: 'UUID лида', type: String })
+  @ApiResponse({ status: 200, description: 'summary, nextAction, email', type: LeadAiInsightResponseDto })
+  @ApiResponse({ status: 404, description: 'Лид не найден' })
+  @Post(':id/ai-analyze')
+  analyzeWithAi(@Param('id') id: string, @CurrentUser() user) {
+    return this.leadsService.analyzeWithAi(id, user.companyId, user.userId);
+  }
+
+  @ApiOperation({ summary: 'ИИ: чат-ассистент по лиду (один запрос на сообщение)' })
+  @ApiParam({ name: 'id', description: 'UUID лида', type: String })
+  @ApiResponse({ status: 200, description: 'Ответ ассистента', type: LeadAiChatResponseDto })
+  @ApiResponse({ status: 400, description: 'Невалидное тело запроса' })
+  @ApiResponse({ status: 404, description: 'Лид не найден' })
+  @Post(':id/ai-chat')
+  chatWithAi(
+    @Param('id') id: string,
+    @Body() dto: LeadAiChatDto,
+    @CurrentUser() user,
+  ) {
+    return this.leadsService.chatWithAi(id, user.companyId, dto);
+  }
+
+  @ApiOperation({ summary: 'ИИ: последний сохранённый полный разбор по лиду' })
+  @ApiParam({ name: 'id', description: 'UUID лида', type: String })
+  @ApiResponse({ status: 200, description: 'Снимок или null', type: LeadAiAnalysisLatestResponseDto })
+  @ApiResponse({ status: 404, description: 'Лид не найден' })
+  @Get(':id/ai-analysis/latest')
+  getLatestAiAnalysis(@Param('id') id: string, @CurrentUser() user) {
+    return this.leadsService.getLatestAiAnalysis(id, user.companyId);
   }
 
   @ApiOperation({ summary: 'Лид по ID' })
