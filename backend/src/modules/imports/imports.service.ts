@@ -3,16 +3,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateImportDto } from './dto/create-import.dto';
 import { Queue } from 'bullmq';
 import IORedis from 'ioredis';
+import { redisConnectionOptions } from '../../redis/redis.config';
 
-
-const connection = new IORedis({
-  host: 'localhost',
-  port: 6379,
-  maxRetriesPerRequest: null,
-});
+const connection = new IORedis(redisConnectionOptions);
 
 export const queue = new Queue('leads', {
-  connection,
+  connection: redisConnectionOptions,
 });
 
 @Injectable()

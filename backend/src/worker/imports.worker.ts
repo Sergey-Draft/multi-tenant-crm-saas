@@ -1,12 +1,8 @@
 import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
+import { redisConnectionOptions } from '../redis/redis.config';
 
-
-const connection = new IORedis({
-    host: 'localhost',
-    port: 6379,
-    maxRetriesPerRequest: null,
-  });
+const connection = new IORedis(redisConnectionOptions);
 
 const heartbeatInterval = setInterval(() => {
   void connection.set('imports:worker:heartbeat', Date.now().toString(), 'EX', 20);
@@ -61,7 +57,7 @@ void connection.set('imports:worker:heartbeat', Date.now().toString(), 'EX', 20)
         errors,
       }
     },
-    { connection },
+    { connection: redisConnectionOptions },
   );
   
   worker.on('completed', (job) => {
