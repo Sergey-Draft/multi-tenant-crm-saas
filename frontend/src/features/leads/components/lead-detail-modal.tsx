@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
  
 "use client";
 
@@ -117,7 +118,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {    
     e.preventDefault();
     if (!lead) return;
     mutation.mutate(

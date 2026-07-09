@@ -47,6 +47,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/settings": "Настройки",
   "/settings/user": "Профиль",
   "/settings/backend-api": "Backend API",
+  "/settings/backend-jobs": "Фоновые задачи",
   "/documentation": "API Docs",
 }
 

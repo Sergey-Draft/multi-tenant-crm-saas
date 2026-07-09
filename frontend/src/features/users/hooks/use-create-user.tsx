@@ -16,18 +16,3 @@ export default function useCreateUser() {
   })
 
 }
-
-
-// export function useCreateUser() {
-//   const queryClient = useQueryClient()
-
-//   return useMutation({
-//     mutationFn: createUser,
-
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({
-//         queryKey: ["users"],
-//       })
-//     },
-//   })
-// }

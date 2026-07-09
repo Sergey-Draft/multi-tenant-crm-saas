@@ -10,7 +10,6 @@ const SETTINGS_HREF = "/settings"
 const SECTION_SYSTEM = "Система/Backend"
 const SECTION_DOCS = "Документация"
 
-/** Подписи страниц `/dashboard/*` — совпадают с PAGE_TITLES в топбаре. */
 const DASHBOARD_NESTED_TITLES: Record<string, string> = {
   "/dashboard/clients": "Клиенты",
   "/dashboard/users": "Пользователи",
@@ -46,6 +45,13 @@ function crumbsSettings(pathname: string): DashboardCrumb[] | null {
       { label: SECTION_SYSTEM },
       { label: "Настройки", href: SETTINGS_HREF },
       { label: "Backend API" },
+    ]
+  }
+  if (pathname === "/settings/backend-jobs") {
+    return [
+      { label: SECTION_SYSTEM },
+      { label: "Настройки", href: SETTINGS_HREF },
+      { label: "Фоновые задачи" },
     ]
   }
   return null

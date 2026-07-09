@@ -11,6 +11,7 @@ import { useCompany } from "@/features/companies/hooks/use-company";
 import {
   User,
   Code2,
+  ServerCog,
   ArrowRight,
   ShieldCheck,
   Clock,
@@ -26,7 +27,6 @@ import {
 } from "lucide-react";
 import { env } from "../../../env";
 
-// ─── JWT decode (no library needed — payload is plain base64) ─────────────────
 
 interface JwtPayload {
   sub: string;
@@ -77,7 +77,6 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
-// ─── Session Card ─────────────────────────────────────────────────────────────
 
 function SessionCard() {
   const user = useAuthStore((s) => s.user);
@@ -155,7 +154,7 @@ function SessionCard() {
         )}
       </div>
 
-      {/* Timer */}
+
       {secondsLeft !== null && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -179,7 +178,7 @@ function SessionCard() {
 
       <Separator />
 
-      {/* Payload fields */}
+
       <div className="grid grid-cols-2 gap-x-6 gap-y-3">
         <div>
           <p className="text-sm text-muted-foreground uppercase tracking-wide mb-0.5">
@@ -229,8 +228,7 @@ function SessionCard() {
     </div>
   );
 }
-
-// ─── API Health Card ──────────────────────────────────────────────────────────
+// такие статусы
 // "online"   = HTTP 2xx  — сервер отвечает корректно
 // "degraded" = HTTP 4xx  — сервер работает, но запрос не прошёл (напр. 401)
 // "offline"  = HTTP 5xx или сеть недоступна
@@ -391,7 +389,7 @@ function ApiHealthCard() {
   );
 }
 
-// ─── Nav Card ─────────────────────────────────────────────────────────────────
+
 
 function NavCard({
   href,
@@ -452,7 +450,7 @@ export default function SettingsOverviewPage() {
 
   return (
     <div className=" mx-auto space-y-8">
-      {/* Header */}
+  
       <div>
         <p className="text-sm text-muted-foreground mt-0.5">
           {user?.name ?? user?.email ?? "—"} ·{" "}
@@ -460,7 +458,6 @@ export default function SettingsOverviewPage() {
         </p>
       </div>
 
-      {/* Quick info */}
       <div className="flex justify-start gap-4">
         <div className="rounded-xl border bg-white p-5 inline-block">
           <div className="flex flex-wrap gap-8  ">
@@ -495,7 +492,7 @@ export default function SettingsOverviewPage() {
         </div>
 
         <div className="rounded-xl border bg-white p-5 inline-block w-[30%] relative group">
-          {/* Видимая часть - только заголовок */}
+
           <div className="cursor-pointer">
             <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">
               Текущий JWT
@@ -503,7 +500,6 @@ export default function SettingsOverviewPage() {
             <p className="text-sm text-gray-500">Наведите для просмотра...</p>
           </div>
 
-          {/* Раскрывающаяся часть поверх */}
           <div className="
     absolute top-0 left-0 w-full bg-white border rounded-xl shadow-xl p-5 z-50 
     opacity-0 invisible group-hover:opacity-100 group-hover:visible 
@@ -526,7 +522,6 @@ export default function SettingsOverviewPage() {
 
       <Separator />
 
-      {/* Live widgets */}
       <div>
         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -538,7 +533,6 @@ export default function SettingsOverviewPage() {
         </div>
       </div>
 
-      {/* Navigation cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <NavCard
           href="/settings/user"
@@ -552,6 +546,13 @@ export default function SettingsOverviewPage() {
           title="Backend API"
           description="Swagger UI, OpenAPI JSON, интерактивное тестирование эндпоинтов с текущим JWT."
           badge="Dev"
+        />
+        <NavCard
+          href="/settings/backend-jobs"
+          icon={ServerCog}
+          title="Backend Jobs"
+          description="Мониторинг Redis/Worker, метрики очереди и история import jobs."
+          badge="Async"
         />
       </div>
     </div>
