@@ -11,6 +11,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { ImportsModule } from './modules/imports/imports.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
     UsersModule,
     DashboardModule,
     AuditLogModule,
+    ImportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

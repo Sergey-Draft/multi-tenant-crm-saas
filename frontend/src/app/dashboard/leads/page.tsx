@@ -1,3 +1,5 @@
+"use client"
+
 import { Suspense } from "react";
 import { TitleSEO } from "@/components/titleSEO/title-SEO";
 import CreateLeadDialog from "@/features/leads/components/create-lead-dialog";

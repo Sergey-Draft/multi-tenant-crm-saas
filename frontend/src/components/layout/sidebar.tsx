@@ -5,7 +5,7 @@ import {
   BarChart3, BookOpen, CalendarDays, ClipboardList, Contact2,
   CreditCard, FileText, GraduationCap, LayoutDashboard, ListChecks,
   Settings, Shield, UserPlus, Users, Wallet, BookMarked, RefreshCw, UserCheck,
-  ExternalLink, Code, UserRoundPen, ScrollText,
+  ExternalLink, Code, UserRoundPen, ScrollText, ServerCog,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -54,6 +54,7 @@ const NAV_SECTIONS: NavSection[] = [
       { title: "Настройки", url: "/settings", icon: Settings },
       { title: "Профиль", url: "/settings/user", icon: UserRoundPen },
       { title: "Backend API", url: "/settings/backend-api", icon: Code },
+      { title: "Фоновые задачи", url: "/settings/backend-jobs", icon: ServerCog },
     ],
   },
   {

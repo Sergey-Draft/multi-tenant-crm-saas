@@ -23,8 +23,8 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean; // Добавляем состояние загрузки
-  error: string | null; // Добавляем для обработки ошибок
+  isLoading: boolean;
+  error: string | null;
 
   setUser: (user: any) => void;
   setAuth: (data: { user: any; accessToken: string; refreshToken: string }) => void;

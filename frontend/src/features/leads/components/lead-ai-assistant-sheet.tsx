@@ -44,6 +44,17 @@ function formatAnalysisDate(iso: string) {
   }).format(new Date(iso));
 }
 
+function createMessageId() {
+  if (
+    typeof globalThis !== "undefined" &&
+    globalThis.crypto &&
+    typeof globalThis.crypto.randomUUID === "function"
+  ) {
+    return globalThis.crypto.randomUUID();
+  }
+  return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export type LeadAiAssistantSheetProps = {
   leadId: string | null;
   leadTitle?: string;
@@ -87,7 +98,7 @@ export function LeadAiAssistantSheet({
       setInput("");
       setMode("CHAT");
       setLatestAnalysis(null);
-      void refreshLatestAnalysis();
+      refreshLatestAnalysis();
     }
   }, [open, leadId, refreshLatestAnalysis]);
 
@@ -103,7 +114,7 @@ export function LeadAiAssistantSheet({
         const { reply } = await chatLeadAi(leadId, { mode, messages: history });
         setRows((prev) => [
           ...prev,
-          { id: crypto.randomUUID(), role: "assistant", content: reply },
+          { id: createMessageId(), role: "assistant", content: reply },
         ]);
       } catch (err: unknown) {
         const msg =
@@ -114,7 +125,7 @@ export function LeadAiAssistantSheet({
         setRows((prev) => [
           ...prev,
           {
-            id: crypto.randomUUID(),
+            id: createMessageId(),
             role: "assistant",
             content: "Не удалось выполнить запрос. Попробуйте ещё раз.",
           },
@@ -131,7 +142,7 @@ export function LeadAiAssistantSheet({
     if (!text || !leadId || loading) return;
 
     const userRow: Row = {
-      id: crypto.randomUUID(),
+      id: createMessageId(),
       role: "user",
       content: text,
     };
@@ -167,7 +178,7 @@ export function LeadAiAssistantSheet({
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      void handleSend();
+      handleSend();
     }
   };
 
@@ -220,7 +231,7 @@ export function LeadAiAssistantSheet({
               <div className="max-h-72 overflow-y-auto space-y-3 border-t px-3 py-3 text-sm leading-relaxed">
                 {latestAnalysis.usedFallback && (
                   <p className="rounded-md bg-amber-500/10 px-2 py-1 text-amber-950 dark:text-amber-100">
-                    Ответ без ИИ или упрощённый (fallback).
+                    Ответ без ИИ или упрощённый.
                   </p>
                 )}
                 <div>
@@ -298,7 +309,7 @@ export function LeadAiAssistantSheet({
             <Button
               type="button"
               className="h-9 px-3.5 text-sm"
-              onClick={() => void handleSend()}
+              onClick={() => handleSend()}
               disabled={loading || !input.trim() || !leadId}
             >
               {loading ? (
@@ -317,7 +328,7 @@ export function LeadAiAssistantSheet({
             variant="secondary"
             className="h-9 w-full text-sm"
             disabled={!leadId || analyzeLoading}
-            onClick={() => void handlePersistAnalyze()}
+            onClick={() => handlePersistAnalyze()}
           >
             {analyzeLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
