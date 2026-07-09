@@ -1,13 +1,18 @@
+ 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Queue } from 'bullmq';
 import { CreateImportDto } from './dto/create-import.dto';
-import {
-  getRedisConnectionOptions,
-  redisClient,
-} from '../../redis/redis.config';
+import { Queue } from 'bullmq';
+import IORedis from 'ioredis';
+
+
+const connection = new IORedis({
+  host: 'localhost',
+  port: 6379,
+  maxRetriesPerRequest: null,
+});
 
 export const queue = new Queue('leads', {
-  connection: getRedisConnectionOptions(),
+  connection,
 });
 
 @Injectable()
@@ -16,8 +21,8 @@ export class ImportsService {
     const job = await queue.add(
       'import-leads-demo',
       {
-        leadIds: body.leadIds,
-        name: body.name,
+      leadIds: body.leadIds,
+      name: body.name,
       },
       {
         attempts: 3,
@@ -73,14 +78,14 @@ export class ImportsService {
     let redisOnline = false;
 
     try {
-      const pong = await redisClient.ping();
+      const pong = await connection.ping();
       redisOnline = pong === 'PONG';
     } catch {
       redisOnline = false;
     }
 
     const latencyMs = Date.now() - startedAt;
-    const heartbeatRaw = await redisClient.get('imports:worker:heartbeat');
+    const heartbeatRaw = await connection.get('imports:worker:heartbeat');
     const heartbeatTs = heartbeatRaw ? Number(heartbeatRaw) : null;
     const workerOnline =
       heartbeatTs !== null && Date.now() - heartbeatTs < 15000;
