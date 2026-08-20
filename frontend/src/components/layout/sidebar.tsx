@@ -22,7 +22,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuthStore } from "@/features/auth/store/auth.store";
+import { useImpersonationStore } from "@/features/companies/store/impersonation.store";
 import { usePathname } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 
 interface NavItem {
   title: string;
@@ -84,6 +86,8 @@ export default function AppSidebar() {
   const { state } = useSidebar();
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
+  const impersonating = useImpersonationStore((s) => s.active);
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -153,18 +157,37 @@ export default function AppSidebar() {
       </SidebarContent>
 
       {state !== "collapsed" && user && (
-        <SidebarFooter className="p-4 border-t border-sidebar-border">
+        <SidebarFooter className="p-4 border-t border-sidebar-border space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-sidebar-primary/20 flex items-center justify-center text-sidebar-primary text-xs font-semibold shrink-0">
               {(user.name?.[0] ?? user.email?.[0] ?? "U").toUpperCase()}
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-sidebar-accent-foreground truncate">
-                {user.name ?? user.email}
-              </p>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-medium text-sidebar-accent-foreground truncate">
+                  {user.name ?? user.email}
+                </p>
+                {isSuperAdmin && (
+                  <Badge variant="destructive" className="h-4 px-1.5 text-[9px] font-semibold tracking-wide shrink-0">
+                    <Shield className="h-2.5 w-2.5" /> SUPER ADMIN
+                  </Badge>
+                )}
+              </div>
               <p className="text-xs text-sidebar-muted truncate">{user.role}</p>
             </div>
           </div>
+
+          {isSuperAdmin && impersonating && (
+            <div className="flex items-center gap-1.5 rounded-md bg-amber-500/10 border border-amber-500/30 px-2 py-1.5">
+              <UserCheck className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 leading-tight">Просматривает:</p>
+                <p className="text-xs font-medium text-amber-700 dark:text-amber-300 truncate leading-tight">
+                  {impersonating.name}
+                </p>
+              </div>
+            </div>
+          )}
         </SidebarFooter>
       )}
     </Sidebar>

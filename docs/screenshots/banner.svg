@@ -1,0 +1,258 @@
+<svg width="1280" height="480" viewBox="0 0 1280 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="a1" cx="22%" cy="42%" r="52%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="a2" cx="78%" cy="78%" r="45%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5b21b6" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#5b21b6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="a3" cx="90%" cy="10%" r="38%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0e7490" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0e7490" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="ms" x="-8%" y="-10%" width="122%" height="130%">
+      <feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#000" flood-opacity="0.65"/>
+    </filter>
+    <filter id="bs" x="-4%" y="-4%" width="112%" height="118%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.38"/>
+    </filter>
+    <pattern id="g" x="0" y="0" width="38" height="38" patternUnits="userSpaceOnUse">
+      <path d="M 38 0 L 0 0 0 38" fill="none" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
+    </pattern>
+    <clipPath id="clip">
+      <rect x="652" y="22" width="604" height="438" rx="14"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1280" height="480" fill="#040b18"/>
+  <rect width="1280" height="480" fill="url(#a1)"/>
+  <rect width="1280" height="480" fill="url(#a2)"/>
+  <rect width="1280" height="480" fill="url(#a3)"/>
+  <rect width="1280" height="480" fill="url(#g)"/>
+  <rect x="0" y="0" width="3" height="480" fill="#3b82f6" opacity="0.85"/>
+
+  <!-- LEFT PANEL -->
+  <text x="52" y="106" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="60" font-weight="700" fill="#ffffff" letter-spacing="-1.5">CRM Platform</text>
+  <text x="52" y="138" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="15" fill="#8eb3d0">Multi-tenant SaaS · Lead management · Team workflows</text>
+  <rect x="52" y="152" width="44" height="2.5" rx="1.2" fill="#3b82f6"/>
+  <line x1="104" y1="153.5" x2="610" y2="153.5" stroke="#0d1826" stroke-width="1"/>
+
+  <!-- Feature chips row 1 -->
+  <rect x="52" y="167" width="120" height="28" rx="14" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="112" y="185" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#6ee7b7">Multi-tenant</text>
+  <rect x="180" y="167" width="116" height="28" rx="14" fill="rgba(124,58,237,0.2)" stroke="#7c3aed" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="238" y="185" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#c4b5fd">RBAC · 5 roles</text>
+  <rect x="304" y="167" width="116" height="28" rx="14" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="362" y="185" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#fde68a">AI Assistant</text>
+  <rect x="428" y="167" width="84" height="28" rx="14" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="470" y="185" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#93c5fd">Kanban</text>
+
+  <!-- Feature chips row 2 -->
+  <rect x="52" y="204" width="94" height="28" rx="14" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="99" y="222" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#fca5a5">Audit Log</text>
+  <rect x="154" y="204" width="86" height="28" rx="14" fill="rgba(20,184,166,0.2)" stroke="#14b8a6" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="197" y="222" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#5eead4">BullMQ</text>
+  <rect x="248" y="204" width="130" height="28" rx="14" fill="rgba(249,115,22,0.2)" stroke="#f97316" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="313" y="222" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#fdba74">Background Jobs</text>
+  <rect x="386" y="204" width="82" height="28" rx="14" fill="rgba(6,182,212,0.2)" stroke="#06b6d4" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="427" y="222" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#a5f3fc">JWT Auth</text>
+
+  <!-- Tech stack -->
+  <line x1="52" y1="248" x2="610" y2="248" stroke="#0d1826" stroke-width="1"/>
+  <text x="52" y="270" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9.5" fill="#4d6880" letter-spacing="2">TECH STACK</text>
+
+  <!-- Pills row 1 -->
+  <rect x="52" y="280" width="68" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="86" y="295" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">NestJS</text>
+  <rect x="128" y="280" width="88" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="172" y="295" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">TypeScript</text>
+  <rect x="224" y="280" width="76" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="262" y="295" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">Next.js 16</text>
+  <rect x="308" y="280" width="90" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="353" y="295" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">PostgreSQL</text>
+  <rect x="406" y="280" width="56" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="434" y="295" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">Redis</text>
+  <rect x="470" y="280" width="58" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="499" y="295" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">Prisma</text>
+
+  <!-- Pills row 2 -->
+  <rect x="52" y="310" width="68" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="86" y="325" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">BullMQ</text>
+  <rect x="128" y="310" width="66" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="161" y="325" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">Gemini</text>
+  <rect x="202" y="310" width="50" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="227" y="325" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">Groq</text>
+  <rect x="260" y="310" width="102" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="311" y="325" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">TanStack Query</text>
+  <rect x="370" y="310" width="66" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="403" y="325" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">Zustand</text>
+  <rect x="444" y="310" width="68" height="22" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="0.75"/>
+  <text x="478" y="325" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="11" fill="#9ab8d0">Tailwind</text>
+
+  <line x1="52" y1="350" x2="610" y2="350" stroke="#0d1826" stroke-width="1"/>
+  <text x="52" y="374" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" fill="#5d7a8c">From schema design to production-ready API</text>
+
+  <!-- RIGHT PANEL back depth -->
+  <rect x="670" y="42" width="596" height="422" rx="14" fill="#0c1824" filter="url(#bs)"/>
+  <rect x="786" y="68" width="106" height="52" rx="7" fill="#1a2e4a" opacity="0.65"/>
+  <rect x="900" y="68" width="106" height="52" rx="7" fill="#1a2e4a" opacity="0.65"/>
+  <rect x="1014" y="68" width="106" height="52" rx="7" fill="#1a2e4a" opacity="0.65"/>
+  <rect x="1128" y="68" width="116" height="52" rx="7" fill="#1a2e4a" opacity="0.65"/>
+  <rect x="786" y="134" width="458" height="292" rx="6" fill="#112030" opacity="0.45"/>
+
+  <!-- FRONT APP PANEL -->
+  <rect x="652" y="22" width="604" height="438" rx="14" fill="#1e293b" filter="url(#ms)"/>
+  <g clip-path="url(#clip)">
+    <!-- Sidebar -->
+    <rect x="652" y="22" width="120" height="438" fill="#0f1c2e"/>
+    <line x1="772" y1="22" x2="772" y2="460" stroke="#1e3558" stroke-width="1.5"/>
+    <rect x="664" y="40" width="28" height="28" rx="7" fill="#2563eb"/>
+    <text x="678" y="59" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="14" font-weight="700" fill="#ffffff">D</text>
+    <text x="700" y="59" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">Draft</text>
+    <text x="664" y="88" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7.5" fill="#3e5870" letter-spacing="0.8">ОСНОВНЫЕ</text>
+    <rect x="656" y="93" width="110" height="20" rx="4" fill="rgba(37,99,235,0.28)"/>
+    <text x="664" y="107" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#93c5fd">CRM Дашборд</text>
+    <text x="664" y="126" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#5e7a95">Клиенты</text>
+    <text x="664" y="142" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#5e7a95">Пользователи</text>
+    <rect x="656" y="147" width="110" height="20" rx="4" fill="rgba(255,255,255,0.06)"/>
+    <text x="664" y="161" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#94a3b8">Лиды</text>
+    <text x="664" y="179" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#5e7a95">Задачи</text>
+    <text x="664" y="195" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#5e7a95">Журнал аудита</text>
+    <text x="664" y="218" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7.5" fill="#3e5870" letter-spacing="0.8">СИСТЕМА</text>
+    <text x="664" y="234" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#5e7a95">Настройки</text>
+    <text x="664" y="250" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#5e7a95">Backend API</text>
+    <text x="664" y="266" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" fill="#5e7a95">Фоновые задачи</text>
+    <rect x="656" y="418" width="110" height="28" rx="5" fill="rgba(255,255,255,0.05)"/>
+    <circle cx="669" cy="432" r="9" fill="#1d4ed8"/>
+    <text x="669" y="436" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="700" fill="#ffffff">N</text>
+    <text x="682" y="428" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#7a90a4">Сергей Крот</text>
+    <text x="682" y="440" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7.5" fill="#ef4444">SUPER_ADMIN</text>
+
+    <!-- Content area -->
+    <rect x="772" y="22" width="484" height="438" fill="#f1f5f9"/>
+    <rect x="772" y="22" width="484" height="36" fill="#ffffff"/>
+    <line x1="772" y1="58" x2="1256" y2="58" stroke="#e2e8f0" stroke-width="0.5"/>
+    <text x="788" y="40" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="10" fill="#94a3b8">Дашборд /</text>
+    <text x="833" y="40" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="10" font-weight="600" fill="#1e293b">Лиды</text>
+    <rect x="1066" y="30" width="76" height="18" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.5"/>
+    <text x="1082" y="42" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#64748b">freedom v</text>
+    <rect x="1148" y="30" width="82" height="18" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.5"/>
+    <text x="1164" y="42" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#64748b">draft@krot v</text>
+
+    <!-- KPI cards -->
+    <rect x="782" y="66" width="108" height="52" rx="8" fill="#3b82f6"/>
+    <text x="794" y="84" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" fill="rgba(255,255,255,0.82)">Всего клиентов</text>
+    <text x="794" y="107" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="24" font-weight="700" fill="#ffffff">8</text>
+    <rect x="898" y="66" width="108" height="52" rx="8" fill="#14b8a6"/>
+    <text x="910" y="84" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" fill="rgba(255,255,255,0.82)">Лидов в работе</text>
+    <text x="910" y="107" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="24" font-weight="700" fill="#ffffff">7</text>
+    <rect x="1014" y="66" width="108" height="52" rx="8" fill="#f59e0b"/>
+    <text x="1026" y="84" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" fill="rgba(255,255,255,0.82)">Закрыто за месяц</text>
+    <text x="1026" y="107" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="24" font-weight="700" fill="#ffffff">2</text>
+    <rect x="1130" y="66" width="112" height="52" rx="8" fill="#8b5cf6"/>
+    <text x="1140" y="84" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7.5" fill="rgba(255,255,255,0.82)">Задач к выполнению</text>
+    <text x="1140" y="107" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="24" font-weight="700" fill="#ffffff">5</text>
+
+    <!-- Subtitle + button -->
+    <text x="788" y="135" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#94a3b8">Канбан-доска для управления лидами</text>
+    <rect x="782" y="144" width="84" height="22" rx="5" fill="#2563eb"/>
+    <text x="824" y="159" text-anchor="middle" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="9" font-weight="600" fill="#ffffff">Добавить Лид</text>
+
+    <!-- Kanban Col 1: НОВЫЙ -->
+    <rect x="782" y="174" width="110" height="266" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.5"/>
+    <rect x="782" y="174" width="110" height="4" rx="3" fill="#3b82f6"/>
+    <circle cx="795" cy="188" r="3.5" fill="#3b82f6"/>
+    <text x="803" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" font-weight="700" fill="#1e293b">НОВЫЙ</text>
+    <text x="868" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#94a3b8">10</text>
+    <rect x="788" y="199" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="788" y="199" width="3" height="54" rx="2" fill="#3b82f6"/>
+    <text x="797" y="213" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Редизайн сайта-</text>
+    <text x="797" y="224" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">визитки</text>
+    <text x="797" y="237" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Клиент наглый...</text>
+    <text x="797" y="247" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">09 июл. 2026</text>
+    <rect x="788" y="259" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="788" y="259" width="3" height="54" rx="2" fill="#3b82f6"/>
+    <text x="797" y="273" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Техподдержка</text>
+    <text x="797" y="284" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">на аутсорсе</text>
+    <text x="797" y="297" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Василий Иваныч</text>
+    <text x="797" y="307" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">09 июл. 2026</text>
+    <rect x="788" y="319" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="788" y="319" width="3" height="54" rx="2" fill="#3b82f6"/>
+    <text x="797" y="333" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Миграция из Excel</text>
+    <text x="797" y="357" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Кратович А.</text>
+    <text x="797" y="367" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">14 июл. 2026</text>
+
+    <!-- Kanban Col 2: В РАБОТЕ -->
+    <rect x="900" y="174" width="110" height="266" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.5"/>
+    <rect x="900" y="174" width="110" height="4" rx="3" fill="#ef4444"/>
+    <circle cx="913" cy="188" r="3.5" fill="#ef4444"/>
+    <text x="921" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" font-weight="700" fill="#1e293b">В РАБОТЕ</text>
+    <text x="985" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#94a3b8">7</text>
+    <rect x="906" y="199" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="906" y="199" width="3" height="54" rx="2" fill="#ef4444"/>
+    <text x="915" y="213" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Настройка ролей</text>
+    <text x="915" y="224" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">и прав доступа</text>
+    <text x="915" y="237" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Kratovich Sergey</text>
+    <text x="915" y="247" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#ef4444">Дедлайн: 17 июл.</text>
+    <rect x="906" y="259" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="906" y="259" width="3" height="54" rx="2" fill="#ef4444"/>
+    <text x="915" y="273" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Дашборд KPI</text>
+    <text x="915" y="297" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Клиент послушный</text>
+    <text x="915" y="307" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">27 июл. 2026</text>
+    <rect x="906" y="319" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="906" y="319" width="3" height="54" rx="2" fill="#ef4444"/>
+    <text x="915" y="333" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Email-рассылки</text>
+    <text x="915" y="357" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Котя</text>
+    <text x="915" y="367" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#ef4444">Дедлайн: 19 июл.</text>
+
+    <!-- Kanban Col 3: ОБРАБОТАН -->
+    <rect x="1018" y="174" width="110" height="266" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.5"/>
+    <rect x="1018" y="174" width="110" height="4" rx="3" fill="#22c55e"/>
+    <circle cx="1031" cy="188" r="3.5" fill="#22c55e"/>
+    <text x="1039" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" font-weight="700" fill="#1e293b">ОБРАБОТАН</text>
+    <text x="1104" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#94a3b8">5</text>
+    <rect x="1024" y="199" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="1024" y="199" width="3" height="54" rx="2" fill="#22c55e"/>
+    <text x="1033" y="213" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Обучение</text>
+    <text x="1033" y="224" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">менеджеров</text>
+    <text x="1033" y="237" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Клиент адм...</text>
+    <text x="1033" y="247" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">02 июл. 2026</text>
+    <rect x="1024" y="259" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="1024" y="259" width="3" height="54" rx="2" fill="#22c55e"/>
+    <text x="1033" y="273" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">1С Интеграция</text>
+    <text x="1033" y="297" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Василий Иваныч</text>
+    <text x="1033" y="307" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">06 июл. 2026</text>
+    <rect x="1024" y="319" width="98" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="1024" y="319" width="3" height="54" rx="2" fill="#22c55e"/>
+    <text x="1033" y="333" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Корп. портал</text>
+    <text x="1033" y="357" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Клиент наглый...</text>
+    <text x="1033" y="367" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">25 июн. 2026</text>
+
+    <!-- Kanban Col 4: ОТКАЗ -->
+    <rect x="1136" y="174" width="108" height="266" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.5"/>
+    <rect x="1136" y="174" width="108" height="4" rx="3" fill="#9ca3af"/>
+    <circle cx="1149" cy="188" r="3.5" fill="#9ca3af"/>
+    <text x="1157" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" font-weight="700" fill="#1e293b">ОТКАЗ</text>
+    <text x="1214" y="192" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8.5" fill="#94a3b8">3</text>
+    <rect x="1142" y="199" width="96" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="1142" y="199" width="3" height="54" rx="2" fill="#9ca3af"/>
+    <text x="1151" y="213" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Подключение</text>
+    <text x="1151" y="224" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">IP-телефонии</text>
+    <text x="1151" y="237" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Катя Кравченко</text>
+    <text x="1151" y="247" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">25 июн. 2026</text>
+    <rect x="1142" y="259" width="96" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="1142" y="259" width="3" height="54" rx="2" fill="#9ca3af"/>
+    <text x="1151" y="273" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">Доработка</text>
+    <text x="1151" y="284" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">моб. приложения</text>
+    <text x="1151" y="297" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Клиент наглый...</text>
+    <text x="1151" y="307" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">30 июл. 2026</text>
+    <rect x="1142" y="319" width="96" height="54" rx="5" fill="#f8fafc" stroke="#e5e7eb" stroke-width="0.5"/>
+    <rect x="1142" y="319" width="3" height="54" rx="2" fill="#9ca3af"/>
+    <text x="1151" y="333" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="8" font-weight="500" fill="#111827">IP-ATS Mango</text>
+    <text x="1151" y="357" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#3b82f6">Василий Иваныч</text>
+    <text x="1151" y="367" font-family="'Segoe UI',system-ui,Arial,sans-serif" font-size="7" fill="#9ca3af">03 авг. 2026</text>
+  </g>
+  <rect x="652" y="22" width="604" height="438" rx="14" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+</svg>

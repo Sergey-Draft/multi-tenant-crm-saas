@@ -1,6 +1,6 @@
 # CRM Platform
 
-**A production-style, multi-tenant SaaS CRM** for lead management, client workflows, and team operations — built end-to-end as a portfolio project.
+**A production-style, multi-tenant SaaS CRM** for lead management, client workflows, and team operations — built end-to-end to production standards.
 
 [![NestJS](https://img.shields.io/badge/NestJS-11-EF4444?logo=nestjs&logoColor=white)](https://nestjs.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -179,4 +179,4 @@ If you're reviewing this for a hiring decision: start with the **screenshots**, 
 
 ## License
 
-Private portfolio project. All rights reserved.
+Private project. All rights reserved.

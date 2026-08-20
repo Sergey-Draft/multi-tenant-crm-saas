@@ -94,15 +94,15 @@ export default function BackendJobsPage() {
       <div className="rounded-xl border bg-card p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-base font-semibold">Импорт лидов (демо)</p>
+            <p className="text-base font-semibold">Импорт лидов </p>
             <p className="text-sm text-muted-foreground">
               Тест фоновой обработки через BullMQ/Redis
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
-              disabled
+              // variant="outline"
+              // disabled
             >
               Импорт CSV 
             </Button>

@@ -2,7 +2,7 @@
 
 import { SidebarProvider } from "../ui/sidebar"
 import AppSidebar from "./sidebar"
-import { Bell, LogOut, User, Building2, ChevronDown } from "lucide-react"
+import { Bell, LogOut, User, Building2, ChevronDown, ShieldAlert } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import { usePathname } from "next/navigation"
 import { useAuthStore } from "@/features/auth/store/auth.store"
 import { useCompany } from "@/features/companies/hooks/use-company"
 import { useCompanies } from "@/features/companies/hooks/use-companies"
+import { useImpersonationStore } from "@/features/companies/store/impersonation.store"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DashboardTitleArea } from "./dashboard-breadcrumbs"
 
@@ -59,8 +60,11 @@ function CompanyWidget() {
 
   const { data: currentCompany, isLoading: companyLoading } = useCompany(user?.companyId)
   const { data: allCompanies } = useCompanies()
+  const { active: impersonating, start, stop } = useImpersonationStore()
 
   const companyName = currentCompany?.name ?? (companyLoading ? null : user?.companyId ?? "—")
+  const activeCompanyId = impersonating?.id ?? user?.companyId
+  const displayName = impersonating?.name ?? companyName
 
   if (isSuperAdmin) {
     return (
@@ -69,13 +73,17 @@ function CompanyWidget() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 gap-1.5 text-sm font-normal text-foreground/80 hover:text-foreground px-2"
+            className={`h-8 gap-1.5 text-sm font-normal px-2 ${
+              impersonating
+                ? "text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                : "text-foreground/80 hover:text-foreground"
+            }`}
           >
-            <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            {companyLoading ? (
+            <Building2 className={`h-3.5 w-3.5 shrink-0 ${impersonating ? "text-amber-500" : "text-muted-foreground"}`} />
+            {companyLoading && !impersonating ? (
               <Skeleton className="h-3.5 w-24" />
             ) : (
-              <span className="max-w-[160px] truncate">{companyName}</span>
+              <span className="max-w-[160px] truncate">{displayName}</span>
             )}
             <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           </Button>
@@ -86,19 +94,30 @@ function CompanyWidget() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {allCompanies?.map((c) => (
-            <DropdownMenuItem key={c.id} className="gap-2">
-              {/* <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> */}
+            <DropdownMenuItem
+              key={c.id}
+              className="gap-2 cursor-pointer"
+              onClick={() => (c.id === user?.companyId ? stop() : start({ id: c.id, name: c.name }))}
+            >
               <div className="flex flex-col min-w-0">
                 <span className="text-sm truncate">{c.name}</span>
                 <span className="text-[10px] text-muted-foreground font-mono truncate">{c.id}</span>
               </div>
-              {c.id === user?.companyId && (
+              {c.id === activeCompanyId && (
                 <span className="ml-auto text-[10px] text-primary font-medium">текущая</span>
               )}
             </DropdownMenuItem>
           ))}
           {(!allCompanies || allCompanies.length === 0) && (
             <div className="px-2 py-1.5 text-xs text-muted-foreground">Нет данных</div>
+          )}
+          {impersonating && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={stop} className="gap-2 cursor-pointer text-primary focus:text-primary">
+                <LogOut className="h-3.5 w-3.5" /> Вернуться в свою компанию
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
@@ -113,6 +132,31 @@ function CompanyWidget() {
       ) : (
         <span className="max-w-[160px] truncate">{companyName}</span>
       )}
+    </div>
+  )
+}
+
+// ─── Impersonation Banner ───────────────────────────────────────────────────
+
+function ImpersonationBanner() {
+  const { active, stop } = useImpersonationStore()
+
+  if (!active) return null
+
+  return (
+    <div className="flex items-center justify-center gap-2 bg-amber-500 text-amber-950 text-sm font-medium px-4 py-2 shrink-0">
+      <ShieldAlert className="h-4 w-4 shrink-0" />
+      <span>
+        Режим супер-администратора: вы просматриваете «{active.name}» вместо своей компании.
+      </span>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={stop}
+        className="h-6 px-2 text-amber-950 hover:bg-amber-600/30 hover:text-amber-950 underline"
+      >
+        Выйти из режима
+      </Button>
     </div>
   )
 }
@@ -203,6 +247,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
+          <ImpersonationBanner />
           <TopBar />
           <main className="flex-1 p-6 overflow-auto scrollbar-thin">{children}</main>
         </div>
