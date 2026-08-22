@@ -1,3 +1,5 @@
+![CRM Platform banner](docs/screenshots/banner.svg)
+
 # CRM Platform
 
 **A production-style, multi-tenant SaaS CRM** for lead management, client workflows, and team operations — built end-to-end to production standards.
