@@ -8,7 +8,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
 import { CreateLeadNoteDto } from './dto/create-lead-note.dto';
 
-/** Роли, которые могут удалять чужие заметки. Автор может удалить свою всегда. */
 const NOTE_MODERATOR_ROLES: UserRole[] = [
   UserRole.SUPER_ADMIN,
   UserRole.OWNER,

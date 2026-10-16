@@ -100,7 +100,6 @@ model LeadAiAnalysis {
   @@index([companyId])
 }
 
-/// Заметки менеджера по лиду (итоги звонков, договорённости). Используются и как контекст для ИИ.
 model LeadNote {
   id        String   @id @default(uuid())
   leadId    String

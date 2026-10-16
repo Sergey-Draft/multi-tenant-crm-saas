@@ -21,7 +21,6 @@ type LeadForPrompt = Lead & {
   notes: Pick<LeadNote, 'text' | 'createdAt'>[];
 };
 
-/** Сколько последних заметок менеджера отдаём модели как контекст. */
 const NOTES_IN_PROMPT = 15;
 
 const INSIGHT_JSON_SCHEMA = {

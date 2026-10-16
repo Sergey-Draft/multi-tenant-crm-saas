@@ -43,6 +43,8 @@ const TASK_STATUS_VARIANT: Record<
   DONE: "outline",
 };
 
+const EDIT_FORM_ID = "lead-edit-form";
+
 const LEAD_STATUS_VARIANT: Record<
   string,
   "default" | "secondary" | "destructive" | "outline"
@@ -147,230 +149,233 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
   return (
     <>
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-center justify-start gap-4 mr-8">
-            {isEditing ? (
-              <Input
-                name="title"
-                value={form.title}
-                onChange={handleChange}
-                className="text-lg font-semibold"
-                placeholder="Название лида"
-              />
-            ) : (
-              <DialogTitle className="text-lg">{lead.title}</DialogTitle>
-            )}
-            <div className="flex items-center gap-2">
-              {isEditing ? (
-                <Select
-                  value={form.status}
-                  onValueChange={(v) => handleSelectChange(v, "status")}
-                >
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEAD_STATUS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Badge variant={LEAD_STATUS_VARIANT[lead.status]}>
-                  {leadLabelMap[lead.status] ?? lead.status}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </DialogHeader>
-
-        <form onSubmit={handleSave}>
-          <div className="space-y-6">
-            {/* Клиент */}
-            <div className="rounded-lg border bg-muted/30 p-4">
-              <Label className="text-xs font-medium text-muted-foreground">
-                Клиент
-              </Label>
-              {isEditing ? (
-                <Select
-                  value={form.clientId}
-                  onValueChange={(v) => handleSelectChange(v, "clientId")}
-                >
-                  <SelectTrigger className="mt-2">
-                    <SelectValue placeholder="Выберите клиента" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clientOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                lead.client && (
-                  <>
-                    <p className="font-medium mt-1">{lead.client.name}</p>
-                    <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
-                      {lead.client.phone && (
-                        <span className="flex items-center gap-1">
-                          <Phone className="h-3.5 w-3.5" />
-                          {lead.client.phone}
-                        </span>
-                      )}
-                      {lead.client.email && (
-                        <span className="flex items-center gap-1">
-                          <Mail className="h-3.5 w-3.5" />
-                          {lead.client.email}
-                        </span>
-                      )}
-                    </div>
-                  </>
-                )
-              )}
-            </div>
-
-            {/* Даты + ответственный */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <Label className="text-xs text-muted-foreground">Создан</Label>
-                <p className="flex items-center gap-1 mt-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {formatDate(lead.createdAt)}
-                </p>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Срок</Label>
+      <DialogContent className="sm:max-w-lg lg:max-w-5xl max-h-[90vh] overflow-y-auto lg:flex lg:flex-col lg:overflow-hidden">
+        <div className="grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)]">
+          <div className="min-w-0 lg:min-h-0 lg:overflow-y-auto lg:pr-2">
+            <DialogHeader>
+              <div className="flex items-center justify-start gap-4 mr-8">
                 {isEditing ? (
                   <Input
-                    type="date"
-                    name="dateDue"
-                    value={form.dateDue}
+                    name="title"
+                    value={form.title}
                     onChange={handleChange}
-                    className="mt-1"
+                    className="text-lg font-semibold"
+                    placeholder="Название лида"
                   />
                 ) : (
-                  lead.dateDue && (
+                  <DialogTitle className="text-lg">{lead.title}</DialogTitle>
+                )}
+                <div className="flex items-center gap-2">
+                  {isEditing ? (
+                    <Select
+                      value={form.status}
+                      onValueChange={(v) => handleSelectChange(v, "status")}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LEAD_STATUS_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant={LEAD_STATUS_VARIANT[lead.status]}>
+                      {leadLabelMap[lead.status] ?? lead.status}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </DialogHeader>
+
+            <form id={EDIT_FORM_ID} onSubmit={handleSave}>
+              <div className="space-y-6">
+                {/* Клиент */}
+                <div className="rounded-lg border bg-muted/30 p-4">
+                  <Label className="text-xs font-medium text-muted-foreground">
+                    Клиент
+                  </Label>
+                  {isEditing ? (
+                    <Select
+                      value={form.clientId}
+                      onValueChange={(v) => handleSelectChange(v, "clientId")}
+                    >
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder="Выберите клиента" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clientOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    lead.client && (
+                      <>
+                        <p className="font-medium mt-1">{lead.client.name}</p>
+                        <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
+                          {lead.client.phone && (
+                            <span className="flex items-center gap-1">
+                              <Phone className="h-3.5 w-3.5" />
+                              {lead.client.phone}
+                            </span>
+                          )}
+                          {lead.client.email && (
+                            <span className="flex items-center gap-1">
+                              <Mail className="h-3.5 w-3.5" />
+                              {lead.client.email}
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    )
+                  )}
+                </div>
+
+                {/* Даты + ответственный */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Создан</Label>
                     <p className="flex items-center gap-1 mt-1">
                       <Calendar className="h-3.5 w-3.5" />
-                      {formatDate(lead.dateDue)}
+                      {formatDate(lead.createdAt)}
                     </p>
-                  )
-                )}
-              </div>
-              <div className="col-span-2">
-                <Label className="text-xs text-muted-foreground">
-                  Ответственный
-                </Label>
-                {isEditing ? (
-                  <Select
-                    value={form.assignedToId}
-                    onValueChange={(v) => handleSelectChange(v, "assignedToId")}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Выберите ответственного" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="null">Не назначен</SelectItem>
-                      {userOptions?.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <p className="mt-1">
-                    {lead.assignedTo ? (
-                      <span className="flex items-center gap-1">
-                        <User className="h-3.5 w-3.5" />
-                        {lead.assignedTo.name || lead.assignedTo.email}
-                      </span>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Срок</Label>
+                    {isEditing ? (
+                      <Input
+                        type="date"
+                        name="dateDue"
+                        value={form.dateDue}
+                        onChange={handleChange}
+                        className="mt-1"
+                      />
                     ) : (
-                      <span className="text-muted-foreground italic">
-                        Не назначен
-                      </span>
+                      lead.dateDue && (
+                        <p className="flex items-center gap-1 mt-1">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {formatDate(lead.dateDue)}
+                        </p>
+                      )
                     )}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Описание */}
-            <div>
-              <Label className="text-xs font-medium text-muted-foreground">
-                Описание
-              </Label>
-              {isEditing ? (
-                <textarea
-                  name="description"
-                  value={form.description}
-                  onChange={handleChange}
-                  rows={4}
-                  className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  placeholder="Описание лида"
-                />
-              ) : (
-                lead.description && (
-                  <p className="text-sm leading-relaxed mt-2">
-                    {lead.description}
-                  </p>
-                )
-              )}
-            </div>
-
-            {/* Задачи — только просмотр */}
-            <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-3 block">
-                Задачи ({lead.Task?.length ?? 0})
-              </Label>
-              {!lead.Task?.length ? (
-                <p className="text-sm text-muted-foreground">Нет задач</p>
-              ) : (
-                <ul className="space-y-2">
-                  {lead.Task.map((task: any) => (
-                    <li
-                      key={task.id}
-                      className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm"
-                    >
-                      <Badge
-                        variant={TASK_STATUS_VARIANT[task.status]}
-                        className="shrink-0"
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-xs text-muted-foreground">
+                      Ответственный
+                    </Label>
+                    {isEditing ? (
+                      <Select
+                        value={form.assignedToId}
+                        onValueChange={(v) => handleSelectChange(v, "assignedToId")}
                       >
-                        {taskLabelMap[task.status] ?? task.status}
-                      </Badge>
-                      <span>{task.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Выберите ответственного" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="null">Не назначен</SelectItem>
+                          {userOptions?.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <p className="mt-1">
+                        {lead.assignedTo ? (
+                          <span className="flex items-center gap-1">
+                            <User className="h-3.5 w-3.5" />
+                            {lead.assignedTo.name || lead.assignedTo.email}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground italic">
+                            Не назначен
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Описание */}
+                <div>
+                  <Label className="text-xs font-medium text-muted-foreground">
+                    Описание
+                  </Label>
+                  {isEditing ? (
+                    <textarea
+                      name="description"
+                      value={form.description}
+                      onChange={handleChange}
+                      rows={4}
+                      className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      placeholder="Описание лида"
+                    />
+                  ) : (
+                    lead.description && (
+                      <p className="text-sm leading-relaxed mt-2">
+                        {lead.description}
+                      </p>
+                    )
+                  )}
+                </div>
+
+                {/* Задачи — только просмотр */}
+                <div>
+                  <Label className="text-xs font-medium text-muted-foreground mb-3 block">
+                    Задачи ({lead.Task?.length ?? 0})
+                  </Label>
+                  {!lead.Task?.length ? (
+                    <p className="text-sm text-muted-foreground">Нет задач</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {lead.Task.map((task: any) => (
+                        <li
+                          key={task.id}
+                          className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm"
+                        >
+                          <Badge
+                            variant={TASK_STATUS_VARIANT[task.status]}
+                            className="shrink-0"
+                          >
+                            {taskLabelMap[task.status] ?? task.status}
+                          </Badge>
+                          <span>{task.title}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </form>
           </div>
 
-          {isEditing ? (
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsEditing(false)}
-              >
-                Отмена
-              </Button>
-              <Button type="submit" disabled={mutation.isPending}>
-                Сохранить
-              </Button>
-            </DialogFooter>
-          ) : null}
-        </form>
+          <aside className="min-w-0 border-t pt-6 lg:min-h-0 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-6">
+            <LeadNotes leadId={lead.id} />
+          </aside>
+        </div>
 
-        {/* Заметки вне <form>: своя отправка, не мешает редактированию лида */}
-        {!isEditing && <LeadNotes leadId={lead.id} />}
-
-        {!isEditing ? (
-          <DialogFooter className="mt-6 flex flex-wrap gap-2 sm:justify-end">
+        {isEditing ? (
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsEditing(false)}
+            >
+              Отмена
+            </Button>
+            <Button type="submit" form={EDIT_FORM_ID} disabled={mutation.isPending}>
+              Сохранить
+            </Button>
+          </DialogFooter>
+        ) : (
+          <DialogFooter className="flex flex-wrap gap-2 sm:justify-end">
             <Button
               type="button"
               variant="secondary"
@@ -384,7 +389,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
               Редактировать
             </Button>
           </DialogFooter>
-        ) : null}
+        )}
       </DialogContent>
     </Dialog>
     <LeadAiAssistantSheet

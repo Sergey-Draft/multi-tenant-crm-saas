@@ -13,7 +13,6 @@ import {
 } from "../hooks/use-lead-notes";
 
 const MAX_LENGTH = 5000;
-// Совпадает с NOTE_MODERATOR_ROLES на бэкенде
 const MODERATOR_ROLES = ["SUPER_ADMIN", "OWNER", "ADMIN"];
 
 function formatNoteDate(dateStr: string) {
@@ -41,12 +40,12 @@ export function LeadNotes({ leadId }: { leadId: string }) {
   };
 
   return (
-    <div>
+    <div className="flex flex-col lg:h-full lg:min-h-0">
       <Label className="text-xs font-medium text-muted-foreground mb-3 block">
         Заметки ({notes?.length ?? 0})
       </Label>
 
-      <div className="space-y-2">
+      <div className="shrink-0 space-y-2">
         <Textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -79,7 +78,7 @@ export function LeadNotes({ leadId }: { leadId: string }) {
       ) : !notes?.length ? (
         <p className="text-sm text-muted-foreground mt-3">Заметок пока нет</p>
       ) : (
-        <ul className="mt-3 space-y-2">
+        <ul className="mt-3 space-y-2 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1">
           {notes.map((note) => {
             const canDelete = isModerator || note.author?.id === user?.id;
             return (
