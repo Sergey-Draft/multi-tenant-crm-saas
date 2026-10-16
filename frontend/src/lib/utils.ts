@@ -23,7 +23,7 @@ interface UserOption {
  * Получить имя пользователя по ID
  * @param userId - ID пользователя
  * @param userOptions - массив опций пользователей
- * @returns имя пользователя или "unknown user"
+ * @returns имя пользователя или "unknown user" или "unknown entities"
  */
 export const getUserName = (
   userId: string | null | undefined,
