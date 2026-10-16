@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { Lead, Client, Prisma, PrismaClient, Task } from '@prisma/client';
+import type { Lead, Client, LeadNote, Prisma, PrismaClient, Task } from '@prisma/client';
 import { LeadAiChatDto, LeadAiChatMode } from './dto/lead-ai-chat.dto';
 
 export type LeadAiInsightResult = {
@@ -18,7 +18,11 @@ export type LeadAiInsightResult = {
 type LeadForPrompt = Lead & {
   client: Client;
   Task: Pick<Task, 'id' | 'title' | 'status' | 'deadline'>[];
+  notes: Pick<LeadNote, 'text' | 'createdAt'>[];
 };
+
+/** Сколько последних заметок менеджера отдаём модели как контекст. */
+const NOTES_IN_PROMPT = 15;
 
 const INSIGHT_JSON_SCHEMA = {
   type: 'object',
@@ -65,6 +69,11 @@ export class LeadAiInsightService {
           orderBy: { createdAt: 'desc' },
           take: 20,
         },
+        notes: {
+          select: { text: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          take: NOTES_IN_PROMPT,
+        },
       },
     });
 
@@ -79,7 +88,7 @@ export class LeadAiInsightService {
     ) as 'gemini' | 'groq';
     const model =
       provider === 'groq'
-        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'llama-3.1-8b-instant'
+        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'openai/gpt-oss-120b'
         : this.config.get<string>('GEMINI_MODEL')?.trim() || 'gemini-2.0-flash';
     const apiKey =
       provider === 'groq'
@@ -171,6 +180,11 @@ export class LeadAiInsightService {
           orderBy: { createdAt: 'desc' },
           take: 20,
         },
+        notes: {
+          select: { text: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          take: NOTES_IN_PROMPT,
+        },
       },
     });
 
@@ -185,7 +199,7 @@ export class LeadAiInsightService {
     ) as 'gemini' | 'groq';
     const model =
       provider === 'groq'
-        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'llama-3.1-8b-instant'
+        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'openai/gpt-oss-120b'
         : this.config.get<string>('GEMINI_MODEL')?.trim() || 'gemini-2.0-flash';
     const apiKey =
       provider === 'groq'
@@ -267,6 +281,7 @@ export class LeadAiInsightService {
               '- "email": a ready-to-send client email when follow-up by email makes sense; if a call or internal step is clearly better, write a short line explaining that instead of a fake letter.\n' +
               '- "nextAction": one focused recommendation (what to write in chat, call script line, or email opener).\n' +
               '- "summary": 2–4 sentences max.\n' +
+              '- "managerNotes" are the manager\'s own notes (call results, agreements), newest first. Treat them as the most recent context and build on them.\n' +
               '- Do not invent facts not supported by the data; you may note uncertainty briefly.',
           },
         ],
@@ -345,6 +360,7 @@ export class LeadAiInsightService {
             '- "nextAction": one focused recommendation.\n' +
             '- "summary": 2-4 sentences max.\n' +
             '- If lead language is Russian (Cyrillic), write ALL fields in Russian.\n' +
+            '- "managerNotes" are the manager\'s own notes (call results, agreements), newest first. Treat them as the most recent context and build on them.\n' +
             '- Return ONLY JSON object with keys: summary, nextAction, email.',
         },
         {
@@ -529,6 +545,10 @@ function formatLeadForPrompt(lead: LeadForPrompt) {
       status: t.status,
       deadline: t.deadline?.toISOString?.() ?? t.deadline,
     })),
+    managerNotes: lead.notes.map((n) => ({
+      date: n.createdAt.toISOString(),
+      text: n.text,
+    })),
   };
 }
 
@@ -561,8 +581,10 @@ function buildChatSystemInstruction(
   const modeLine = lang === 'ru' ? modeRu[mode] : modeEn[mode];
   const base =
     lang === 'ru'
-      ? 'Ты опытный помощник в CRM по продажам. Пиши естественно, без канцелярита. Не выдумывай факты — если данных мало, скажи об этом кратко.\n'
-      : 'You are an experienced CRM sales assistant. Write naturally. Do not invent facts; if data is thin, say so briefly.\n';
+      ? 'Ты опытный помощник в CRM по продажам. Пиши естественно, без канцелярита. Не выдумывай факты — если данных мало, скажи об этом кратко.\n' +
+        'managerNotes — заметки менеджера (итоги звонков, договорённости), новые сверху; это самый свежий контекст по лиду.\n'
+      : 'You are an experienced CRM sales assistant. Write naturally. Do not invent facts; if data is thin, say so briefly.\n' +
+        'managerNotes are the manager\'s own notes (call results, agreements), newest first; treat them as the most recent context.\n';
   return `${base}${modeLine}\n\nCurrent lead (JSON):\n${leadBlock}`;
 }
 

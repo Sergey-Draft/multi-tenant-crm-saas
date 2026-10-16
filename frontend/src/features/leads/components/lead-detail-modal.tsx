@@ -29,6 +29,7 @@ import {
 } from "@/lib/options";
 import { Calendar, User, Phone, Mail, Pencil, Sparkles } from "lucide-react";
 import { LeadAiAssistantSheet } from "./lead-ai-assistant-sheet";
+import { LeadNotes } from "./lead-notes";
 import useUpdateLead from "../hooks/use-update-lead";
 import { useClientOptions } from "@/features/clients/hooks/use-client-options";
 import { useUserOptions } from "@/features/users/hooks/use-user-options";
@@ -146,7 +147,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
   return (
     <>
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-start gap-4 mr-8">
             {isEditing ? (
@@ -364,6 +365,9 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
             </DialogFooter>
           ) : null}
         </form>
+
+        {/* Заметки вне <form>: своя отправка, не мешает редактированию лида */}
+        {!isEditing && <LeadNotes leadId={lead.id} />}
 
         {!isEditing ? (
           <DialogFooter className="mt-6 flex flex-wrap gap-2 sm:justify-end">

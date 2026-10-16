@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
-export type AuditEntityType = 'Lead' | 'Client' | 'Task';
+export type AuditEntityType = 'Lead' | 'Client' | 'Task' | 'LeadNote';
 export type AuditAction = 'CREATE' | 'UPDATE' | 'DELETE';
 
 export interface AuditLogParams {

@@ -21,6 +21,7 @@ const ENTITY_LABELS: Record<string, string> = {
   Lead: "Лид",
   Client: "Клиент",
   Task: "Задача",
+  LeadNote: "Заметка",
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -150,6 +151,7 @@ export function AuditLogsTable() {
           <SelectItem value="Lead">Лид</SelectItem>
           <SelectItem value="Client">Клиент</SelectItem>
           <SelectItem value="Task">Задача</SelectItem>
+          <SelectItem value="LeadNote">Заметка</SelectItem>
         </SelectContent>
       </Select>
       <Select
