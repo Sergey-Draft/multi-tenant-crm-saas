@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { LandingHeroPreview } from "@/components/landing/landing-hero-preview";
+import { AuthLink } from "@/components/landing/auth-link";
 import { 
   ArrowRight, 
   CheckCircle, 
@@ -21,12 +21,12 @@ import {
   MailCheck
 } from "lucide-react";
 
-export default async function HomePage() {
-  const cookieStore = await cookies();
-  const hasAccessToken = Boolean(cookieStore.get("accessToken")?.value);
-  const primaryHref = hasAccessToken ? "/dashboard" : "/register";
-  const primaryLabel = hasAccessToken ? "Перейти в дашборд" : "Зарегистрироваться";
+// Чистая статика: без cookies()/headers() страница попадает в Full Route
+// Cache и отдаётся как SSG. Ревалидация раз в час — маркетинговый контент
+// меняется редко, но билд не нужен для обновления копирайта.
+export const revalidate = 3600;
 
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* HERO секция с градиентом */}
@@ -53,13 +53,15 @@ export default async function HomePage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                href={primaryHref}
+              <AuthLink
+                authedHref="/dashboard"
+                authedLabel="Перейти в дашборд"
+                guestHref="/register"
+                guestLabel="Зарегистрироваться"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
               >
-                {primaryLabel}
                 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </AuthLink>
               <Link
                 href="/login"
                 className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all duration-200 active:scale-[0.98]"
@@ -177,19 +179,22 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href={hasAccessToken ? "/dashboard/leads" : "/register"}
+            <AuthLink
+              authedHref="/dashboard/leads"
+              authedLabel="Открыть лиды"
+              guestHref="/register"
+              guestLabel="Попробовать AI в CRM"
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 active:scale-[0.98]"
             >
-              {hasAccessToken ? "Открыть лиды" : "Попробовать AI в CRM"}
               <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href={hasAccessToken ? "/dashboard/settings/backend-api" : "/login"}
+            </AuthLink>
+            <AuthLink
+              authedHref="/dashboard/settings/backend-api"
+              authedLabel="API ассистента"
+              guestHref="/login"
+              guestLabel="API ассистента"
               className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary transition-all duration-200 active:scale-[0.98]"
-            >
-              API ассистента
-            </Link>
+            />
           </div>
         </div>
       </section>
@@ -349,12 +354,13 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Link
-                href={primaryHref}
+              <AuthLink
+                authedHref="/dashboard"
+                authedLabel="В дашборд"
+                guestHref="/register"
+                guestLabel="Зарегистрироваться"
                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 active:scale-[0.98]"
-              >
-                {hasAccessToken ? "В дашборд" : "Зарегистрироваться"}
-              </Link>
+              />
               <a
                 href="https://github.com/Sergey-Draft/multi-tenant-crm-saas"
                 target="_blank"
@@ -378,12 +384,13 @@ export default async function HomePage() {
             Создано для обучения и реального использования.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href={primaryHref}
+            <AuthLink
+              authedHref="/dashboard"
+              authedLabel="Перейти в дашборд"
+              guestHref="/register"
+              guestLabel="Зарегистрироваться"
               className="px-8 py-3 bg-white text-primary rounded-lg font-medium hover:bg-white/90 transition-all duration-200 active:scale-[0.98] shadow-lg"
-            >
-              {primaryLabel}
-            </Link>
+            />
             <Link
               href="/login"
               className="px-8 py-3 border border-white/30 rounded-lg hover:bg-white/10 transition-all duration-200 active:scale-[0.98]"
