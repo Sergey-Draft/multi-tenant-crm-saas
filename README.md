@@ -137,6 +137,7 @@ cd backend
 yarn install
 cp .env.example .env   # edit DATABASE_URL, JWT_SECRET, optional AI keys
 npx prisma migrate deploy
+yarn seed:demo         # optional: 4 demo companies with clients, leads, tasks, notes
 yarn start:dev         # http://localhost:3001
 
 # 3. Worker (separate terminal — required for background imports)
@@ -150,6 +151,21 @@ yarn dev               # http://localhost:3000
 ```
 
 Register a company via the UI (`/auth/register`), then explore the dashboard, leads Kanban, AI assistant, and background jobs page.
+
+### Demo data
+
+`yarn seed:demo` creates four demo tenants (web studio, car service, apartment renovation, body & paint shop): 30 clients and 30–40 leads each, with tasks, notes and an audit trail. Top leads in the "In progress" column have a call-notes history, so the AI analysis has real context to work with.
+
+Each tenant has one user per role, password `demo1234` (override with `SEED_DEMO_PASSWORD`):
+
+| Company | Logins |
+|---|---|
+| Web studio | `owner_web@demo.crm`, `admin_web@demo.crm`, `manager_web@demo.crm`, `employee_web@demo.crm` |
+| Car service | `owner_auto@demo.crm`, `admin_auto@demo.crm`, `manager_auto@demo.crm`, `employee_auto@demo.crm` |
+| Renovation | `owner_repair@demo.crm`, `admin_repair@demo.crm`, `manager_repair@demo.crm`, `employee_repair@demo.crm` |
+| Body & paint | `owner_paint@demo.crm`, `admin_paint@demo.crm`, `manager_paint@demo.crm`, `employee_paint@demo.crm` |
+
+The script is idempotent: re-running resets only the demo tenants. Set `SEED_SUPERADMIN_EMAIL` and `SEED_SUPERADMIN_PASSWORD` to also create a super-admin. In the production container: `docker compose -f docker-compose.prod.yml exec backend node dist/src/seed/demo-seed.js`.
 
 Full setup guide (environment variables, ports, troubleshooting): **[docs/SETUP.md](docs/SETUP.md)** *(Russian)*
 
