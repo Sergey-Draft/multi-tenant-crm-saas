@@ -28,7 +28,16 @@ export class TasksService {
   ) {}
 
   async create(dto: CreateTaskDto, user: any) {
- 
+    if (dto.leadId) {
+      const lead = await this.prisma.lead.findFirst({
+        where: { id: dto.leadId, companyId: user.companyId },
+        select: { id: true },
+      });
+      if (!lead) {
+        throw new BadRequestException('Invalid lead');
+      }
+    }
+
     let assignedUser: AssignedUser | null;
 
     if (dto.assignedToId) {
@@ -69,6 +78,7 @@ export class TasksService {
         title: dto.title,
         leadId: dto.leadId,
         assignedToId: dto.assignedToId,
+        deadline: dto.deadline ? new Date(dto.deadline) : undefined,
         createdById: user.userId,
         companyId: user.companyId,
       },

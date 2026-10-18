@@ -104,7 +104,8 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
       });
       setIsEditing(false);
     }
-  }, [lead]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lead?.id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
