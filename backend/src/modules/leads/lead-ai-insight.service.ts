@@ -8,6 +8,12 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { Lead, Client, LeadNote, Prisma, PrismaClient, Task } from '@prisma/client';
 import { LeadAiChatDto, LeadAiChatMode } from './dto/lead-ai-chat.dto';
+import {
+  buildToolsInstruction,
+  LEAD_AI_TOOLS,
+  LeadAiAction,
+  parseToolCalls,
+} from './lead-ai-actions';
 
 export type LeadAiInsightResult = {
   summary: string;
@@ -161,7 +167,7 @@ export class LeadAiInsightService {
     leadId: string,
     companyId: string,
     dto: LeadAiChatDto,
-  ): Promise<{ reply: string }> {
+  ): Promise<{ reply: string; actions: LeadAiAction[] }> {
     const last = dto.messages[dto.messages.length - 1];
     if (!last || last.role !== 'user') {
       throw new BadRequestException('Последнее сообщение должно быть от пользователя');
@@ -205,8 +211,15 @@ export class LeadAiInsightService {
         ? this.config.get<string>('GROQ_API_KEY')?.trim()
         : this.config.get<string>('GEMINI_API_KEY')?.trim();
 
+    const useTools =
+      provider === 'groq' &&
+      (dto.mode === LeadAiChatMode.CHAT || dto.mode === LeadAiChatMode.NEXT_ACTION);
+
     const leadPayload = formatLeadForPrompt(lead);
-    const systemText = buildChatSystemInstruction(dto.mode, leadPayload, lang);
+    let systemText = buildChatSystemInstruction(dto.mode, leadPayload, lang);
+    if (useTools) {
+      systemText += '\n\n' + buildToolsInstruction(new Date());
+    }
 
     const trimmed = dto.messages.map((m) => ({
       role: m.role,
@@ -214,19 +227,27 @@ export class LeadAiInsightService {
     }));
 
     if (!apiKey) {
-      return { reply: chatFallbackNoKey(lead, lang, dto.mode) };
+      return { reply: chatFallbackNoKey(lead, lang, dto.mode), actions: [] };
     }
 
     try {
-      const reply =
+      const result =
         provider === 'groq'
-          ? await this.runGroqChat(systemText, trimmed, model, apiKey)
-          : await this.runGeminiChat(systemText, trimmed, model, apiKey);
-      return { reply: reply.trim() || chatFallbackNoKey(lead, lang, dto.mode) };
+          ? await this.runGroqChat(systemText, trimmed, model, apiKey, useTools)
+          : { text: await this.runGeminiChat(systemText, trimmed, model, apiKey), actions: [] };
+
+      let reply = fixNewlines(result.text).trim();
+      if (!reply && result.actions.length) {
+        reply = lang === 'ru' ? 'Предлагаю такие действия:' : 'Suggested actions:';
+      }
+      return {
+        reply: reply || chatFallbackNoKey(lead, lang, dto.mode),
+        actions: result.actions,
+      };
     } catch (err) {
       const errText = err instanceof Error ? err.message : String(err);
       this.logger.warn(`Lead AI chat ${provider} failed for lead ${leadId}: ${errText}`);
-      return { reply: chatFallbackError(lead, lang) };
+      return { reply: chatFallbackError(lead, lang), actions: [] };
     }
   }
 
@@ -456,7 +477,8 @@ export class LeadAiInsightService {
     messages: { role: 'user' | 'assistant'; content: string }[],
     model: string,
     apiKey: string,
-  ): Promise<string> {
+    useTools: boolean,
+  ): Promise<{ text: string; actions: LeadAiAction[] }> {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -468,6 +490,7 @@ export class LeadAiInsightService {
         temperature: 0.7,
         max_tokens: 2048,
         messages: [{ role: 'system', content: systemText }, ...messages],
+        ...(useTools ? { tools: LEAD_AI_TOOLS, tool_choice: 'auto' } : {}),
       }),
     });
 
@@ -486,11 +509,13 @@ export class LeadAiInsightService {
       throw new Error(`Groq HTTP ${res.status}: ${msg}`);
     }
 
-    const text = json.choices?.[0]?.message?.content?.trim() ?? '';
-    if (!text) {
+    const message = json.choices?.[0]?.message;
+    const text = message?.content?.trim() ?? '';
+    const actions = parseToolCalls(message?.tool_calls);
+    if (!text && !actions.length) {
       throw new Error('Empty Groq chat response');
     }
-    return text;
+    return { text, actions };
   }
 }
 
@@ -580,7 +605,7 @@ function buildChatSystemInstruction(
   const modeLine = lang === 'ru' ? modeRu[mode] : modeEn[mode];
   const base =
     lang === 'ru'
-      ? 'Ты опытный помощник в CRM по продажам. Пиши естественно, без канцелярита. Не выдумывай факты — если данных мало, скажи об этом кратко.\n' +
+      ? 'Ты опытный помощник в CRM по продажам. Пиши естественно, без канцелярита, простым текстом без markdown. Не выдумывай факты — если данных мало, скажи об этом кратко.\n' +
         'managerNotes — заметки менеджера (итоги звонков, договорённости), новые сверху; это самый свежий контекст по лиду.\n'
       : 'You are an experienced CRM sales assistant. Write naturally. Do not invent facts; if data is thin, say so briefly.\n' +
         'managerNotes are the manager\'s own notes (call results, agreements), newest first; treat them as the most recent context.\n';
@@ -631,9 +656,9 @@ function normalizeInsight(
   }
 
   const o = parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null;
-  const summary = typeof o?.summary === 'string' ? o.summary.trim() : '';
-  const nextAction = typeof o?.nextAction === 'string' ? o.nextAction.trim() : '';
-  const rawEmail = typeof o?.email === 'string' ? o.email.trim() : '';
+  const summary = typeof o?.summary === 'string' ? fixNewlines(o.summary).trim() : '';
+  const nextAction = typeof o?.nextAction === 'string' ? fixNewlines(o.nextAction).trim() : '';
+  const rawEmail = typeof o?.email === 'string' ? fixNewlines(o.email).trim() : '';
   const email =
     rawEmail ||
     fallbackInsight(lead, lang, 'invalid_json').email;
@@ -656,6 +681,11 @@ function normalizeInsight(
     email,
     _meta: { finishReason: rawText.finishReason },
   };
+}
+
+// Models sometimes return "\n" as two characters instead of a real line break.
+function fixNewlines(text: string): string {
+  return text.replace(/\\r\\n|\\n/g, '\n');
 }
 
 function tryExtractJson(text: string): unknown {
@@ -749,7 +779,10 @@ function fallbackInsight(
 
 type GroqChatCompletionsResponse = {
   choices?: Array<{
-    message?: { content?: string };
+    message?: {
+      content?: string;
+      tool_calls?: { function?: { name?: string; arguments?: string } }[];
+    };
     finish_reason?: string;
   }>;
 };

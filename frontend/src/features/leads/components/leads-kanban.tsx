@@ -123,7 +123,7 @@ const LeadsKanban = () => {
         </div>
       ))}
       <LeadDetailModal
-        lead={selectedLead}
+        lead={data?.find((lead: any) => lead.id === selectedLead?.id) ?? selectedLead}
         onClose={() => setSelectedLead(null)}
       />
       <SimpleDialog
