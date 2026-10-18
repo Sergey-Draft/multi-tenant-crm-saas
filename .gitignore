@@ -1,1 +1,4 @@
 backend/.env.development
+
+# Прод-секреты compose (POSTGRES_PASSWORD, REDIS_PASSWORD)
+infra/.env

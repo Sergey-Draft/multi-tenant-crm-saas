@@ -1,6 +1,6 @@
 import { api } from "@/lib/api-client";
 
-export type AuditEntityType = "Lead" | "Client" | "Task";
+export type AuditEntityType = "Lead" | "Client" | "Task" | "LeadNote";
 export type AuditAction = "CREATE" | "UPDATE" | "DELETE";
 
 export interface AuditLogItem {

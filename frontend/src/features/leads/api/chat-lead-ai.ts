@@ -1,4 +1,5 @@
 import { api } from "@/lib/api-client";
+import type { LeadStatus } from "./lead-change-status";
 
 export type LeadAiChatMode =
   | "CHAT"
@@ -16,8 +17,14 @@ export type LeadAiChatRequest = {
   messages: LeadAiChatMessage[];
 };
 
+export type LeadAiAction =
+  | { type: "create_task"; title: string; deadline: string | null }
+  | { type: "add_note"; text: string }
+  | { type: "change_status"; status: LeadStatus };
+
 export type LeadAiChatResponse = {
   reply: string;
+  actions: LeadAiAction[];
 };
 
 export async function chatLeadAi(

@@ -14,13 +14,18 @@ import { LeadAiInsightResponseDto } from './dto/lead-ai-insight-response.dto';
 import { LeadAiChatDto } from './dto/lead-ai-chat.dto';
 import { LeadAiChatResponseDto } from './dto/lead-ai-chat-response.dto';
 import { LeadAiAnalysisLatestResponseDto } from './dto/lead-ai-analysis-latest-response.dto';
+import { LeadNotesService } from './lead-notes.service';
+import { CreateLeadNoteDto } from './dto/create-lead-note.dto';
 
 @ApiTags('leads')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('leads')
 export class LeadsController {
-  constructor(private leadsService: LeadsService) {}
+  constructor(
+    private leadsService: LeadsService,
+    private leadNotesService: LeadNotesService,
+  ) {}
 
   @ApiOperation({ summary: 'Создать лид' })
   @ApiResponse({ status: 201, description: 'Лид создан' })
@@ -67,6 +72,44 @@ export class LeadsController {
   @Get(':id/ai-analysis/latest')
   getLatestAiAnalysis(@Param('id') id: string, @CurrentUser() user) {
     return this.leadsService.getLatestAiAnalysis(id, user.companyId);
+  }
+
+  @ApiOperation({ summary: 'Заметки по лиду (новые сверху)' })
+  @ApiParam({ name: 'id', description: 'UUID лида', type: String })
+  @ApiResponse({ status: 200, description: 'Массив заметок с автором' })
+  @ApiResponse({ status: 404, description: 'Лид не найден' })
+  @Get(':id/notes')
+  getNotes(@Param('id') id: string, @CurrentUser() user) {
+    return this.leadNotesService.findAll(id, user.companyId);
+  }
+
+  @ApiOperation({ summary: 'Добавить заметку к лиду' })
+  @ApiParam({ name: 'id', description: 'UUID лида', type: String })
+  @ApiResponse({ status: 201, description: 'Заметка создана' })
+  @ApiResponse({ status: 400, description: 'Пустой или слишком длинный текст' })
+  @ApiResponse({ status: 404, description: 'Лид не найден' })
+  @Post(':id/notes')
+  createNote(
+    @Param('id') id: string,
+    @Body() dto: CreateLeadNoteDto,
+    @CurrentUser() user,
+  ) {
+    return this.leadNotesService.create(id, user.companyId, dto, user.userId);
+  }
+
+  @ApiOperation({ summary: 'Удалить заметку (автор или админ)' })
+  @ApiParam({ name: 'id', description: 'UUID лида', type: String })
+  @ApiParam({ name: 'noteId', description: 'UUID заметки', type: String })
+  @ApiResponse({ status: 200, description: 'Заметка удалена' })
+  @ApiResponse({ status: 403, description: 'Нет прав на удаление' })
+  @ApiResponse({ status: 404, description: 'Заметка не найдена' })
+  @Delete(':id/notes/:noteId')
+  removeNote(
+    @Param('id') id: string,
+    @Param('noteId') noteId: string,
+    @CurrentUser() user,
+  ) {
+    return this.leadNotesService.remove(id, noteId, user.companyId, user);
   }
 
   @ApiOperation({ summary: 'Лид по ID' })

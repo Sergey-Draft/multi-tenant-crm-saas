@@ -6,8 +6,14 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { Lead, Client, Prisma, PrismaClient, Task } from '@prisma/client';
+import type { Lead, Client, LeadNote, Prisma, PrismaClient, Task } from '@prisma/client';
 import { LeadAiChatDto, LeadAiChatMode } from './dto/lead-ai-chat.dto';
+import {
+  buildToolsInstruction,
+  LEAD_AI_TOOLS,
+  LeadAiAction,
+  parseToolCalls,
+} from './lead-ai-actions';
 
 export type LeadAiInsightResult = {
   summary: string;
@@ -18,7 +24,10 @@ export type LeadAiInsightResult = {
 type LeadForPrompt = Lead & {
   client: Client;
   Task: Pick<Task, 'id' | 'title' | 'status' | 'deadline'>[];
+  notes: Pick<LeadNote, 'text' | 'createdAt'>[];
 };
+
+const NOTES_IN_PROMPT = 15;
 
 const INSIGHT_JSON_SCHEMA = {
   type: 'object',
@@ -65,6 +74,11 @@ export class LeadAiInsightService {
           orderBy: { createdAt: 'desc' },
           take: 20,
         },
+        notes: {
+          select: { text: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          take: NOTES_IN_PROMPT,
+        },
       },
     });
 
@@ -79,7 +93,7 @@ export class LeadAiInsightService {
     ) as 'gemini' | 'groq';
     const model =
       provider === 'groq'
-        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'llama-3.1-8b-instant'
+        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'openai/gpt-oss-120b'
         : this.config.get<string>('GEMINI_MODEL')?.trim() || 'gemini-2.0-flash';
     const apiKey =
       provider === 'groq'
@@ -153,7 +167,7 @@ export class LeadAiInsightService {
     leadId: string,
     companyId: string,
     dto: LeadAiChatDto,
-  ): Promise<{ reply: string }> {
+  ): Promise<{ reply: string; actions: LeadAiAction[] }> {
     const last = dto.messages[dto.messages.length - 1];
     if (!last || last.role !== 'user') {
       throw new BadRequestException('Последнее сообщение должно быть от пользователя');
@@ -171,6 +185,11 @@ export class LeadAiInsightService {
           orderBy: { createdAt: 'desc' },
           take: 20,
         },
+        notes: {
+          select: { text: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          take: NOTES_IN_PROMPT,
+        },
       },
     });
 
@@ -185,15 +204,22 @@ export class LeadAiInsightService {
     ) as 'gemini' | 'groq';
     const model =
       provider === 'groq'
-        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'llama-3.1-8b-instant'
+        ? this.config.get<string>('GROQ_MODEL')?.trim() || 'openai/gpt-oss-120b'
         : this.config.get<string>('GEMINI_MODEL')?.trim() || 'gemini-2.0-flash';
     const apiKey =
       provider === 'groq'
         ? this.config.get<string>('GROQ_API_KEY')?.trim()
         : this.config.get<string>('GEMINI_API_KEY')?.trim();
 
+    const useTools =
+      provider === 'groq' &&
+      (dto.mode === LeadAiChatMode.CHAT || dto.mode === LeadAiChatMode.NEXT_ACTION);
+
     const leadPayload = formatLeadForPrompt(lead);
-    const systemText = buildChatSystemInstruction(dto.mode, leadPayload, lang);
+    let systemText = buildChatSystemInstruction(dto.mode, leadPayload, lang);
+    if (useTools) {
+      systemText += '\n\n' + buildToolsInstruction(new Date());
+    }
 
     const trimmed = dto.messages.map((m) => ({
       role: m.role,
@@ -201,19 +227,27 @@ export class LeadAiInsightService {
     }));
 
     if (!apiKey) {
-      return { reply: chatFallbackNoKey(lead, lang, dto.mode) };
+      return { reply: chatFallbackNoKey(lead, lang, dto.mode), actions: [] };
     }
 
     try {
-      const reply =
+      const result =
         provider === 'groq'
-          ? await this.runGroqChat(systemText, trimmed, model, apiKey)
-          : await this.runGeminiChat(systemText, trimmed, model, apiKey);
-      return { reply: reply.trim() || chatFallbackNoKey(lead, lang, dto.mode) };
+          ? await this.runGroqChat(systemText, trimmed, model, apiKey, useTools)
+          : { text: await this.runGeminiChat(systemText, trimmed, model, apiKey), actions: [] };
+
+      let reply = fixNewlines(result.text).trim();
+      if (!reply && result.actions.length) {
+        reply = lang === 'ru' ? 'Предлагаю такие действия:' : 'Suggested actions:';
+      }
+      return {
+        reply: reply || chatFallbackNoKey(lead, lang, dto.mode),
+        actions: result.actions,
+      };
     } catch (err) {
       const errText = err instanceof Error ? err.message : String(err);
       this.logger.warn(`Lead AI chat ${provider} failed for lead ${leadId}: ${errText}`);
-      return { reply: chatFallbackError(lead, lang) };
+      return { reply: chatFallbackError(lead, lang), actions: [] };
     }
   }
 
@@ -267,6 +301,7 @@ export class LeadAiInsightService {
               '- "email": a ready-to-send client email when follow-up by email makes sense; if a call or internal step is clearly better, write a short line explaining that instead of a fake letter.\n' +
               '- "nextAction": one focused recommendation (what to write in chat, call script line, or email opener).\n' +
               '- "summary": 2–4 sentences max.\n' +
+              '- "managerNotes" are the manager\'s own notes (call results, agreements), newest first. Treat them as the most recent context and build on them.\n' +
               '- Do not invent facts not supported by the data; you may note uncertainty briefly.',
           },
         ],
@@ -345,6 +380,7 @@ export class LeadAiInsightService {
             '- "nextAction": one focused recommendation.\n' +
             '- "summary": 2-4 sentences max.\n' +
             '- If lead language is Russian (Cyrillic), write ALL fields in Russian.\n' +
+            '- "managerNotes" are the manager\'s own notes (call results, agreements), newest first. Treat them as the most recent context and build on them.\n' +
             '- Return ONLY JSON object with keys: summary, nextAction, email.',
         },
         {
@@ -441,7 +477,8 @@ export class LeadAiInsightService {
     messages: { role: 'user' | 'assistant'; content: string }[],
     model: string,
     apiKey: string,
-  ): Promise<string> {
+    useTools: boolean,
+  ): Promise<{ text: string; actions: LeadAiAction[] }> {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -453,6 +490,7 @@ export class LeadAiInsightService {
         temperature: 0.7,
         max_tokens: 2048,
         messages: [{ role: 'system', content: systemText }, ...messages],
+        ...(useTools ? { tools: LEAD_AI_TOOLS, tool_choice: 'auto' } : {}),
       }),
     });
 
@@ -471,11 +509,13 @@ export class LeadAiInsightService {
       throw new Error(`Groq HTTP ${res.status}: ${msg}`);
     }
 
-    const text = json.choices?.[0]?.message?.content?.trim() ?? '';
-    if (!text) {
+    const message = json.choices?.[0]?.message;
+    const text = message?.content?.trim() ?? '';
+    const actions = parseToolCalls(message?.tool_calls);
+    if (!text && !actions.length) {
       throw new Error('Empty Groq chat response');
     }
-    return text;
+    return { text, actions };
   }
 }
 
@@ -529,6 +569,10 @@ function formatLeadForPrompt(lead: LeadForPrompt) {
       status: t.status,
       deadline: t.deadline?.toISOString?.() ?? t.deadline,
     })),
+    managerNotes: lead.notes.map((n) => ({
+      date: n.createdAt.toISOString(),
+      text: n.text,
+    })),
   };
 }
 
@@ -561,8 +605,10 @@ function buildChatSystemInstruction(
   const modeLine = lang === 'ru' ? modeRu[mode] : modeEn[mode];
   const base =
     lang === 'ru'
-      ? 'Ты опытный помощник в CRM по продажам. Пиши естественно, без канцелярита. Не выдумывай факты — если данных мало, скажи об этом кратко.\n'
-      : 'You are an experienced CRM sales assistant. Write naturally. Do not invent facts; if data is thin, say so briefly.\n';
+      ? 'Ты опытный помощник в CRM по продажам. Пиши естественно, без канцелярита, простым текстом без markdown. Не выдумывай факты — если данных мало, скажи об этом кратко.\n' +
+        'managerNotes — заметки менеджера (итоги звонков, договорённости), новые сверху; это самый свежий контекст по лиду.\n'
+      : 'You are an experienced CRM sales assistant. Write naturally. Do not invent facts; if data is thin, say so briefly.\n' +
+        'managerNotes are the manager\'s own notes (call results, agreements), newest first; treat them as the most recent context.\n';
   return `${base}${modeLine}\n\nCurrent lead (JSON):\n${leadBlock}`;
 }
 
@@ -610,9 +656,9 @@ function normalizeInsight(
   }
 
   const o = parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null;
-  const summary = typeof o?.summary === 'string' ? o.summary.trim() : '';
-  const nextAction = typeof o?.nextAction === 'string' ? o.nextAction.trim() : '';
-  const rawEmail = typeof o?.email === 'string' ? o.email.trim() : '';
+  const summary = typeof o?.summary === 'string' ? fixNewlines(o.summary).trim() : '';
+  const nextAction = typeof o?.nextAction === 'string' ? fixNewlines(o.nextAction).trim() : '';
+  const rawEmail = typeof o?.email === 'string' ? fixNewlines(o.email).trim() : '';
   const email =
     rawEmail ||
     fallbackInsight(lead, lang, 'invalid_json').email;
@@ -635,6 +681,11 @@ function normalizeInsight(
     email,
     _meta: { finishReason: rawText.finishReason },
   };
+}
+
+// Models sometimes return "\n" as two characters instead of a real line break.
+function fixNewlines(text: string): string {
+  return text.replace(/\\r\\n|\\n/g, '\n');
 }
 
 function tryExtractJson(text: string): unknown {
@@ -728,7 +779,10 @@ function fallbackInsight(
 
 type GroqChatCompletionsResponse = {
   choices?: Array<{
-    message?: { content?: string };
+    message?: {
+      content?: string;
+      tool_calls?: { function?: { name?: string; arguments?: string } }[];
+    };
     finish_reason?: string;
   }>;
 };

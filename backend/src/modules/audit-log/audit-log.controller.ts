@@ -14,7 +14,7 @@ export class AuditLogController {
   @ApiOperation({ summary: 'Список логов аудита с пагинацией и фильтрами' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Страница (по умолчанию 1)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Записей на странице (по умолчанию 20, макс 100)' })
-  @ApiQuery({ name: 'entityType', required: false, enum: ['Lead', 'Client', 'Task'] })
+  @ApiQuery({ name: 'entityType', required: false, enum: ['Lead', 'Client', 'Task', 'LeadNote'] })
   @ApiQuery({ name: 'action', required: false, enum: ['CREATE', 'UPDATE', 'DELETE'] })
   @ApiResponse({ status: 200, description: 'Список логов' })
   @Get()
