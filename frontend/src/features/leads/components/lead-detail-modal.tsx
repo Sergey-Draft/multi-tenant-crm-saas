@@ -2,7 +2,7 @@
  
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -78,7 +78,6 @@ interface LeadDetailModalProps {
 
 export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
   const [sideTab, setSideTab] = useState("notes");
-  const asideRef = useRef<HTMLElement>(null);
   const { data: notes } = useLeadNotes(lead?.id ?? null);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
@@ -154,8 +153,8 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
 
   return (
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg lg:max-w-5xl max-h-[90vh] overflow-y-auto lg:flex lg:flex-col lg:overflow-hidden">
-        <div className="grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)]">
+      <DialogContent className="h-[90dvh] content-start sm:max-w-lg lg:h-[85vh] lg:max-w-5xl overflow-y-auto lg:flex lg:flex-col lg:overflow-hidden">
+        <div className="grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_380px] lg:grid-rows-[minmax(0,1fr)]">
           <div className="min-w-0 lg:min-h-0 lg:overflow-y-auto lg:pr-2">
             <DialogHeader>
               <div className="flex items-center justify-start gap-4 mr-8">
@@ -361,12 +360,9 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
             </form>
           </div>
 
-          <aside
-            ref={asideRef}
-            className="min-w-0 border-t pt-6 lg:min-h-0 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-6"
-          >
+          <aside className="min-w-0 border-t pt-6 lg:min-h-0 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-6">
             <Tabs value={sideTab} onValueChange={setSideTab} className="lg:h-full lg:min-h-0">
-              <TabsList className="w-full">
+              <TabsList className="w-full lg:w-[calc(100%-2rem)]">
                 <TabsTrigger value="notes">Заметки ({notes?.length ?? 0})</TabsTrigger>
                 <TabsTrigger value="ai">
                   <Sparkles />
@@ -392,7 +388,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
         </div>
 
         {isEditing ? (
-          <DialogFooter>
+          <DialogFooter key="edit-footer">
             <Button
               type="button"
               variant="outline"
@@ -405,18 +401,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
             </Button>
           </DialogFooter>
         ) : (
-          <DialogFooter className="flex flex-wrap gap-2 sm:justify-end">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                setSideTab("ai");
-                asideRef.current?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              <Sparkles className="h-4 w-4 mr-1" />
-              ИИ‑ассистент
-            </Button>
+          <DialogFooter key="view-footer" className="flex flex-wrap gap-2 sm:justify-end">
             <Button type="button" onClick={() => setIsEditing(true)}>
               <Pencil className="h-4 w-4 mr-1" />
               Редактировать

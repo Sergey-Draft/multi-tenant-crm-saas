@@ -28,9 +28,9 @@ const MODE_OPTIONS: { value: LeadAiChatMode; label: string }[] = [
 ];
 
 const EXAMPLES = [
+  "Созвонился с клиентом: просит КП до пятницы и перезвонить в понедельник",
   "Что сделать дальше по этому лиду?",
   "Какие риски по сделке?",
-  "Напиши короткое письмо клиенту",
 ];
 
 type Row = LeadAiChatMessage & {
@@ -225,7 +225,7 @@ export function LeadAiAssistant({ leadId, leadTitle }: { leadId: string; leadTit
           {rows.length === 0 && !loading && (
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                Задайте вопрос по лиду. Итоги звонка удобнее писать во вкладке «Заметки» и нажать «Разобрать с ИИ».
+                Опишите итоги звонка или задайте вопрос — ассистент ответит и предложит задачи.
               </p>
               {EXAMPLES.map((example) => (
                 <button
