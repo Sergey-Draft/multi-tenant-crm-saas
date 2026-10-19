@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Send, Trash2 } from "lucide-react";
+import { Loader2, Send, Sparkles, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import {
@@ -11,6 +11,8 @@ import {
   useDeleteLeadNote,
   useLeadNotes,
 } from "../hooks/use-lead-notes";
+import { chatLeadAi, type LeadAiChatResponse } from "../api/chat-lead-ai";
+import { LeadAiActionCard } from "./lead-ai-action-card";
 
 const MAX_LENGTH = 5000;
 const MODERATOR_ROLES = ["SUPER_ADMIN", "OWNER", "ADMIN"];
@@ -26,6 +28,8 @@ function formatNoteDate(dateStr: string) {
 
 export function LeadNotes({ leadId }: { leadId: string }) {
   const [text, setText] = useState("");
+  const [aiResult, setAiResult] = useState<LeadAiChatResponse | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
   const user = useAuthStore((s) => s.user);
   const { data: notes, isLoading } = useLeadNotes(leadId);
   const createNote = useCreateLeadNote(leadId);
@@ -39,12 +43,25 @@ export function LeadNotes({ leadId }: { leadId: string }) {
     createNote.mutate(text.trim(), { onSuccess: () => setText("") });
   };
 
-  return (
-    <div className="flex flex-col lg:h-full lg:min-h-0">
-      <Label className="text-xs font-medium text-muted-foreground mb-3 block">
-        Заметки ({notes?.length ?? 0})
-      </Label>
+  const parseWithAi = async () => {
+    if (!text.trim() || aiLoading) return;
+    setAiLoading(true);
+    setAiResult(null);
+    try {
+      const result = await chatLeadAi(leadId, {
+        mode: "CHAT",
+        messages: [{ role: "user", content: text.trim() }],
+      });
+      setAiResult(result);
+    } catch {
+      toast.error("Не удалось разобрать заметку");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
+  return (
+    <div className="flex flex-col">
       <div className="shrink-0 space-y-2">
         <Textarea
           value={text}
@@ -60,25 +77,61 @@ export function LeadNotes({ leadId }: { leadId: string }) {
           placeholder="Итоги звонка, договорённости…"
           aria-label="Новая заметка"
         />
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs text-muted-foreground">Ctrl+Enter — отправить</span>
-          <Button type="button" size="sm" onClick={submit} disabled={!canSubmit}>
-            {createNote.isPending ? (
-              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4 mr-1" />
-            )}
-            Добавить
-          </Button>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="hidden text-xs text-muted-foreground sm:inline">Ctrl+Enter — отправить</span>
+          <div className="flex flex-1 justify-end gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={parseWithAi}
+              disabled={!text.trim() || aiLoading}
+              title="ИИ предложит задачи и смену статуса по тексту заметки"
+            >
+              {aiLoading ? (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4 mr-1" />
+              )}
+              Разобрать с ИИ
+            </Button>
+            <Button type="button" size="sm" onClick={submit} disabled={!canSubmit}>
+              {createNote.isPending ? (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4 mr-1" />
+              )}
+              Добавить
+            </Button>
+          </div>
         </div>
       </div>
+
+      {aiResult && (
+        <div className="mt-3 space-y-2 rounded-md border bg-muted/30 p-3">
+          <div className="flex items-start justify-between gap-2">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed">{aiResult.reply}</p>
+            <button
+              type="button"
+              onClick={() => setAiResult(null)}
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+              aria-label="Скрыть предложения"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          {aiResult.actions.map((action, i) => (
+            <LeadAiActionCard key={i} leadId={leadId} action={action} />
+          ))}
+        </div>
+      )}
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground mt-3">Загрузка…</p>
       ) : !notes?.length ? (
         <p className="text-sm text-muted-foreground mt-3">Заметок пока нет</p>
       ) : (
-        <ul className="mt-3 space-y-2 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1">
+        <ul className="mt-3 space-y-2">
           {notes.map((note) => {
             const canDelete = isModerator || note.author?.id === user?.id;
             return (

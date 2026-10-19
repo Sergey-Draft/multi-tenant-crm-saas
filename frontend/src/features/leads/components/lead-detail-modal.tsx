@@ -2,7 +2,7 @@
  
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +28,10 @@ import {
   toLabelMap,
 } from "@/lib/options";
 import { Calendar, User, Phone, Mail, Pencil, Sparkles } from "lucide-react";
-import { LeadAiAssistantSheet } from "./lead-ai-assistant-sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LeadAiAssistant } from "./lead-ai-assistant";
 import { LeadNotes } from "./lead-notes";
+import { useLeadNotes } from "../hooks/use-lead-notes";
 import useUpdateLead from "../hooks/use-update-lead";
 import { useClientOptions } from "@/features/clients/hooks/use-client-options";
 import { useUserOptions } from "@/features/users/hooks/use-user-options";
@@ -75,7 +77,9 @@ interface LeadDetailModalProps {
 }
 
 export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
-  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [sideTab, setSideTab] = useState("notes");
+  const asideRef = useRef<HTMLElement>(null);
+  const { data: notes } = useLeadNotes(lead?.id ?? null);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -103,6 +107,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
         dateDue: toDateInputValue(lead.dateDue ?? ""),
       });
       setIsEditing(false);
+      setSideTab("notes");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lead?.id]);
@@ -148,7 +153,6 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
   if (!lead) return null;
 
   return (
-    <>
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg lg:max-w-5xl max-h-[90vh] overflow-y-auto lg:flex lg:flex-col lg:overflow-hidden">
         <div className="grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)]">
@@ -357,8 +361,33 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
             </form>
           </div>
 
-          <aside className="min-w-0 border-t pt-6 lg:min-h-0 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-6">
-            <LeadNotes leadId={lead.id} />
+          <aside
+            ref={asideRef}
+            className="min-w-0 border-t pt-6 lg:min-h-0 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-6"
+          >
+            <Tabs value={sideTab} onValueChange={setSideTab} className="lg:h-full lg:min-h-0">
+              <TabsList className="w-full">
+                <TabsTrigger value="notes">Заметки ({notes?.length ?? 0})</TabsTrigger>
+                <TabsTrigger value="ai">
+                  <Sparkles />
+                  ИИ‑ассистент
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent
+                value="notes"
+                forceMount
+                className="data-[state=inactive]:hidden lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1"
+              >
+                <LeadNotes leadId={lead.id} />
+              </TabsContent>
+              <TabsContent
+                value="ai"
+                forceMount
+                className="data-[state=inactive]:hidden lg:min-h-0 lg:flex-1"
+              >
+                <LeadAiAssistant leadId={lead.id} leadTitle={lead.title} />
+              </TabsContent>
+            </Tabs>
           </aside>
         </div>
 
@@ -380,7 +409,10 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => setAssistantOpen(true)}
+              onClick={() => {
+                setSideTab("ai");
+                asideRef.current?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               <Sparkles className="h-4 w-4 mr-1" />
               ИИ‑ассистент
@@ -393,12 +425,5 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
         )}
       </DialogContent>
     </Dialog>
-    <LeadAiAssistantSheet
-      leadId={lead?.id ?? null}
-      leadTitle={lead?.title}
-      open={assistantOpen}
-      onOpenChange={setAssistantOpen}
-    />
-    </>
   );
 }
