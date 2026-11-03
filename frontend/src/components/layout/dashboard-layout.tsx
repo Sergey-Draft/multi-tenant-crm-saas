@@ -59,7 +59,7 @@ function CompanyWidget() {
   const isSuperAdmin = user?.role === "SUPER_ADMIN"
 
   const { data: currentCompany, isLoading: companyLoading } = useCompany(user?.companyId)
-  const { data: allCompanies } = useCompanies()
+  const { data: allCompanies } = useCompanies(isSuperAdmin)
   const { active: impersonating, start, stop } = useImpersonationStore()
 
   const companyName = currentCompany?.name ?? (companyLoading ? null : user?.companyId ?? "—")

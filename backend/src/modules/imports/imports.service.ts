@@ -13,12 +13,14 @@ export const queue = new Queue('leads', {
 
 @Injectable()
 export class ImportsService {
-  async createJob(body: CreateImportDto) {
+  async createJob(body: CreateImportDto, companyId: string, userId: string) {
     const job = await queue.add(
       'import-leads-demo',
       {
-      leadIds: body.leadIds,
-      name: body.name,
+        leadIds: body.leadIds,
+        name: body.name,
+        companyId,
+        createdById: userId,
       },
       {
         attempts: 3,
@@ -36,10 +38,10 @@ export class ImportsService {
     };
   }
 
-  async getJob(id: string) {
+  async getJob(id: string, companyId: string) {
     const job = await queue.getJob(id);
 
-    if (!job) {
+    if (!job || job.data?.companyId !== companyId) {
       throw new NotFoundException('Job not found');
     }
 
@@ -110,16 +112,17 @@ export class ImportsService {
     return { waiting, active, completed, failed, delayed };
   }
 
-  async getRecentJobs() {
+  async getRecentJobs(companyId: string) {
     const jobs = await queue.getJobs(
       ['active', 'waiting', 'completed', 'failed', 'delayed'],
       0,
       -1,
       false,
     );
+    const ownJobs = jobs.filter((job) => job.data?.companyId === companyId);
 
     return Promise.all(
-      jobs.map(async (job) => ({
+      ownJobs.map(async (job) => ({
         id: job.id,
         name: job.name,
         state: await job.getState(),
