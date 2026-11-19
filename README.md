@@ -15,7 +15,7 @@
 >
 > **For engineers:** real SaaS concerns — tenant isolation, JWT auth, Swagger API, background jobs via BullMQ/Redis, structured AI responses persisted to PostgreSQL, and a separate worker process.
 
-**Live demo:** not available (hosted instance expired). The project runs locally in ~5 minutes with Docker Compose. Screenshots below reflect the actual UI.
+**Live demo:** [draftcrm.dev](https://draftcrm.dev). The project also runs locally in ~5 minutes with Docker Compose.
 
 ---
 

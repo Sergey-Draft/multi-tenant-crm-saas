@@ -1,0 +1,23 @@
+# Caddy сам получает и продлевает сертификат Let's Encrypt для домена
+# и редиректит http -> https. Порты 80 и 443 должны быть открыты.
+
+draftcrm.dev {
+	encode gzip
+
+	request_body {
+		max_size 20MB
+	}
+
+	# /api/leads -> backend:3001/leads (префикс срезается, как раньше в nginx)
+	handle_path /api/* {
+		reverse_proxy backend:3001
+	}
+
+	handle {
+		reverse_proxy frontend:3000
+	}
+}
+
+www.draftcrm.dev {
+	redir https://draftcrm.dev{uri} permanent
+}
